@@ -99,6 +99,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       <button class="tab" role="tab" id="tab-today" data-v="today">Today</button>
       <button class="tab" role="tab" id="tab-week" data-v="week">Week</button>
       <button class="tab" role="tab" id="tab-exams" data-v="exams">Exams</button>
+      <button class="tab" role="tab" id="tab-class" data-v="class">Class</button>
       <button class="tab" role="tab" id="tab-settings" data-v="settings">My times</button>
     </nav>
   </header>
@@ -128,6 +129,21 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       </form>
     </div>
     <div class="cards" id="exam-list" style="margin-top:12px"></div>
+  </section>
+
+  <section id="v-class" hidden>
+    <div class="panel">
+      <div class="eyebrow">Record a class</div>
+      <h2 style="font:700 24px var(--display);margin:0">Record on your iPad, then turn it into flashcards and a quiz</h2>
+      <ol style="margin:0;padding-left:20px;display:grid;gap:6px">
+        <li><b>Ask your teacher first.</b> Recording without permission can break school rules and UAE law.</li>
+        <li>Open <b>Notes</b>, start a new note, tap the <b>paperclip</b> and choose <b>Record Audio</b>. It writes a transcript while it records.</li>
+        <li>After class, open the recording, tap the transcript, <b>select all and copy</b>.</li>
+        <li>Open Class Recorder Notes, paste it, and press <b>Make summary, flashcards and quiz</b>.</li>
+      </ol>
+      <div class="row"><a class="btn big" href="https://claude.ai/artifact/3HYuWWVJrRxEM57npo98sB" target="_blank" rel="noopener" style="text-decoration:none">Open Class Recorder Notes</a></div>
+      <p class="foot">Coach can't record by itself: pages like this aren't allowed to use the microphone.</p>
+    </div>
   </section>
 
   <section id="v-settings" hidden>
@@ -395,7 +411,7 @@ function applyRemote(data) {
 /* ---------- wiring ---------- */
 function show(v) {
   view = v;
-  ["today", "week", "exams", "settings"].forEach(x => { document.getElementById("v-" + x).hidden = x !== v; document.getElementById("tab-" + x).setAttribute("aria-selected", x === v); });
+  ["today", "week", "exams", "class", "settings"].forEach(x => { document.getElementById("v-" + x).hidden = x !== v; document.getElementById("tab-" + x).setAttribute("aria-selected", x === v); });
   if (v === "settings") renderSettings();
   try { localStorage.setItem("coach-tab", v); } catch (e) {}
 }
