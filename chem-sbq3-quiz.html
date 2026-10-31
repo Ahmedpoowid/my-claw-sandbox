@@ -1,0 +1,197 @@
+<title>Chem SBQ3 Question Bank</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centered column, a pH-strip progress bar, and one question card at a time */
+:root {
+  --bg: #f3f6f6; --surface: #ffffff; --ink: #14282b; --muted: #5a6f72; --line: #d6e1e2;
+  --accent: #c2186b; --accent-soft: #fbe3ef; --good: #1f7a4d; --good-soft: #e1f3e8; --bad: #b3261e; --bad-soft: #fbe4e2;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1c1e; --surface: #172a2d; --ink: #e6efef; --muted: #9ab0b3; --line: #2a4246;
+  --accent: #f06fae; --accent-soft: #3a1a2b; --good: #5fd39a; --good-soft: #143326; --bad: #ff8a80; --bad-soft: #3a1c1a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1c1e; --surface: #172a2d; --ink: #e6efef; --muted: #9ab0b3; --line: #2a4246;
+  --accent: #f06fae; --accent-soft: #3a1a2b; --good: #5fd39a; --good-soft: #143326; --bad: #ff8a80; --bad-soft: #3a1c1a; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); }
+.wrap { max-width: 720px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+header h1 { font-family: var(--display); font-weight: 800; font-size: clamp(28px, 6vw, 40px); line-height: 1.05; margin: 0; letter-spacing: -0.5px; text-wrap: balance; }
+header p { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; }
+.strip { height: 10px; border-radius: 6px; background: linear-gradient(90deg,#d7263d 0%,#f46036 14%,#f6c445 30%,#9bc53d 45%,#2e9e5b 55%,#1b98e0 70%,#3d348b 85%,#7b2d8b 100%); position: relative; }
+.strip .cover { position: absolute; top: 0; right: 0; bottom: 0; background: var(--line); border-radius: 0 6px 6px 0; transition: width .3s; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13.5px; color: var(--muted); font-family: var(--mono); }
+.stats b { color: var(--ink); font-weight: 500; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: 500 13px var(--body); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.meta { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12.5px; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
+.page { font-family: var(--mono); color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 6px; text-transform: none; letter-spacing: 0; }
+.q { font-size: 18px; font-weight: 500; margin: 0; }
+.q sub, .q sup { line-height: 0; }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 10px; padding: 11px 14px; font: 15.5px/1.4 var(--body); cursor: pointer; display: flex; gap: 10px; }
+.opt .k { font-family: var(--mono); color: var(--muted); flex: none; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt.right { border-color: var(--good); background: var(--good-soft); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt:disabled { cursor: default; }
+.num { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.num input { font: 500 18px var(--mono); width: 160px; max-width: 100%; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); }
+.btn { border: 0; border-radius: 10px; padding: 11px 18px; font: 600 15px var(--body); cursor: pointer; background: var(--accent); color: #fff; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.fb { border-radius: 10px; padding: 12px 14px; font-size: 15px; }
+.fb.ok { background: var(--good-soft); color: var(--ink); border-left: 4px solid var(--good); }
+.fb.no { background: var(--bad-soft); color: var(--ink); border-left: 4px solid var(--bad); }
+.fb strong { display: block; margin-bottom: 4px; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+.done { text-align: center; display: grid; gap: 10px; }
+.done .big { font: 800 56px var(--display); color: var(--accent); }
+.missed { text-align: left; display: grid; gap: 8px; }
+.missed div { border-left: 3px solid var(--bad); padding: 4px 10px; font-size: 14.5px; }
+.note { font-size: 13px; color: var(--muted); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .strip .cover { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Chem SBQ3 Question Bank</h1>
+    <p>Every question comes from your Ch 16 notes (Aqueous Ionic Equilibrium), with the page it's on.</p>
+  </header>
+
+  <div class="strip" aria-hidden="true"><div class="cover" id="cover" style="width:100%"></div></div>
+  <div class="stats" id="stats"></div>
+
+  <div class="filters" id="filters" role="group" aria-label="Filter by topic"></div>
+
+  <main class="card" id="card" aria-live="polite"></main>
+
+  <p class="note">Pages 6, 12, 16 and 20–24 weren't in the PDF you uploaded, so they have no questions here. Your progress is saved on this device only.</p>
+</div>
+
+<script>
+const T = {CI:"Common ion", BUF:"Buffers", HH:"Henderson-Hasselbalch", EFF:"Effectiveness & range", TIT:"Titration"};
+const Q = [
+ {t:"CI",p:1,q:"A few drops of CH₃COONa are added to a CH₃COOH solution. Which way does CH₃COOH ⇌ CH₃COO⁻ + H⁺ shift?",o:["To the left","To the right","It doesn't shift"],a:0,e:"Increasing [CH₃COO⁻] shifts the equilibrium to the left (Le Chatelier), so there is less H⁺."},
+ {t:"CI",p:1,q:"Compared with CH₃COOH alone, a solution of CH₃COOH and CH₃COONa is…",o:["More acidic","Less acidic","Equally acidic"],a:1,e:"Less acidic, due to the common ion effect: the shift to the left lowers [H⁺]."},
+ {t:"CI",p:1,q:"A few drops of NH₄Cl are added to NH₃ solution. What happens?",o:["[OH⁻] increases, more basic","[OH⁻] decreases, less basic","No change"],a:1,e:"Extra NH₄⁺ shifts NH₃ + H₂O ⇌ NH₄⁺ + OH⁻ to the left, so there is less OH⁻ and the solution is less basic."},
+ {t:"CI",p:2,q:"Calculate the pH of 1.0 M HF (Ka = 7.2 × 10⁻⁴).",n:1.57,tol:0.03,e:"x² / 1.0 = 7.2 × 10⁻⁴, so x = [H⁺] = 2.7 × 10⁻² M and pH = −log(2.7 × 10⁻²) = 1.57."},
+ {t:"CI",p:2,q:"Calculate the % ionization (% α) of 1.0 M HF (Ka = 7.2 × 10⁻⁴). Answer in %.",n:2.7,tol:0.1,e:"% α = [H⁺] / C × 100 = 2.7 × 10⁻² / 1.0 × 100 = 2.7%."},
+ {t:"CI",p:2,q:"Calculate the pH of a solution that is 1.0 M HF and 1.0 M NaF (Ka = 7.2 × 10⁻⁴).",n:3.14,tol:0.03,e:"x(1.0 + x) / (1.0 − x) ≈ x = 7.2 × 10⁻⁴ M, so pH = −log(7.2 × 10⁻⁴) = 3.14."},
+ {t:"CI",p:2,q:"Calculate the % ionization of HF in 1.0 M HF + 1.0 M NaF. Answer in %.",n:0.072,tol:0.004,e:"% α = 7.2 × 10⁻⁴ / 1.0 × 100 = 0.072%."},
+ {t:"CI",p:1,q:"% α drops from 2.7% (HF alone) to 0.072% (HF + NaF). What does this show?",o:["NaF is a strong acid","F⁻ from NaF greatly inhibits the dissociation of HF","HF becomes a strong acid","The equilibrium shifts to the right"],a:1,e:"The F⁻ from NaF shifts the acid dissociation equilibrium to the left, so far less HF dissociates."},
+
+ {t:"BUF",p:3,q:"What is a buffer solution?",o:["A solution with pH exactly 7","A solution that resists a change in pH when a small amount of acid or base is added","A solution of a strong acid and a strong base","A solution that changes colour at the end point"],a:1,e:"It contains components acting as both acid and base: the acid part neutralizes added base, and the base part neutralizes added acid."},
+ {t:"BUF",p:3,q:"Which of these is NOT one of the 4 ways to make a buffer listed in your notes?",o:["Weak acid + its conjugate base","Weak base + its conjugate acid","Weak acid in excess + strong base","Strong acid + its salt"],a:3,e:"The 4 ways: weak acid + conjugate base, weak base + conjugate acid, weak acid (excess) + strong base, weak base (excess) + strong acid. A strong acid can't make a buffer."},
+ {t:"BUF",p:3,q:"Question 1: Which procedure(s) produce a buffered solution?<br>I. Equal volumes of 0.5 M NaOH and 1 M HCl<br>II. Equal volumes of 0.5 M NaOH and 1 M HC₂H₃O₂<br>III. Equal volumes of 1 M NaC₂H₃O₂ and 1 M HC₂H₃O₂",o:["I only","III only","I and II only","II and III only"],a:3,e:"I is strong acid + strong base, so no buffer. II is a weak acid in excess + strong base, which leaves HC₂H₃O₂ and C₂H₃O₂⁻, so it is a buffer. III is a weak acid + its conjugate base, so it is a buffer."},
+ {t:"BUF",p:3,q:"Question 2: Which of the following solutions is a buffer?",o:["0.100 M HNO₂ and 0.100 M HCl","0.100 M HNO₃ and 0.100 M NaNO₃","0.100 M HNO₂ and 0.100 M NaCl","0.100 M HNO₂ and 0.100 M NaNO₂"],a:3,e:"HNO₂ is a weak acid and NaNO₂ gives NO₂⁻, its conjugate base. HNO₃ is strong, and HCl / NaCl aren't HNO₂'s partner."},
+ {t:"BUF",p:3,q:"Question 3: Which mixtures result in a buffer?<br>a) 100.0 mL 0.10 M NH₃ + 100.0 mL 0.15 M NH₄Cl<br>b) 50.0 mL 0.10 M HCl + 35.0 mL 0.150 M NaOH<br>c) 50.0 mL 0.10 M HF + 20.0 mL 0.15 M NaOH<br>d) 175.0 mL 0.10 M NH₃ + 150.0 mL 0.12 M NaOH<br>e) 125.0 mL 0.10 M NH₃ + 150.0 mL 0.20 M NaOH",o:["a only","a and c","b and c","c, d and e"],a:1,e:"a) is a weak base + its conjugate acid, so it is a buffer. c) has 5.0 mmol HF and 3.0 mmol NaOH, so HF is in excess and F⁻ forms: a buffer. b) is strong + strong. d) and e) are a weak base + a strong base, so neither is a buffer."},
+ {t:"BUF",p:4,q:"In an HF / F⁻ buffer, which reaction happens when H⁺ is added?",o:["HF + H⁺ → H₂F⁺","F⁻ + H⁺ → HF","HF + OH⁻ → F⁻ + H₂O","F⁻ + H₂O → HF + OH⁻"],a:1,e:"The base part (F⁻) neutralizes the added acid: F⁻ + H⁺ → HF."},
+ {t:"BUF",p:4,q:"In an HF / F⁻ buffer, which reaction happens when OH⁻ is added?",o:["HF + OH⁻ → F⁻ + H₂O","F⁻ + OH⁻ → no reaction","F⁻ + H⁺ → HF","HF → H⁺ + F⁻"],a:0,e:"The acid part (HF) neutralizes the added base: HF + OH⁻ → F⁻ + H₂O."},
+ {t:"BUF",p:4,q:"In an NH₃ / NH₄⁺ buffer, which reaction happens when H⁺ is added?",o:["NH₄⁺ + H⁺ → NH₅²⁺","NH₄⁺ + OH⁻ → NH₃ + H₂O","NH₃ + H⁺ → NH₄⁺","NH₃ + OH⁻ → NH₂⁻ + H₂O"],a:2,e:"The base part (NH₃) neutralizes the added acid: NH₃ + H⁺ → NH₄⁺."},
+ {t:"BUF",p:4,q:"In an NH₃ / NH₄⁺ buffer, which reaction happens when OH⁻ is added?",o:["NH₃ + H⁺ → NH₄⁺","NH₄⁺ + OH⁻ → NH₃ + H₂O","NH₃ + OH⁻ → no change","NH₄⁺ → NH₃ + H⁺ only"],a:1,e:"The acid part (NH₄⁺) neutralizes the added base: NH₄⁺ + OH⁻ → NH₃ + H₂O."},
+ {t:"BUF",p:4,q:"Which is a basic buffer (pH > 7)?",o:["CH₃COOH / CH₃COO⁻","HF / F⁻","NH₃ / NH₄⁺","HNO₂ / NO₂⁻"],a:2,e:"A basic buffer is a weak base and its salt (B / BH⁺): NH₃ / NH₄⁺. The others are acidic buffers (pH < 7)."},
+ {t:"BUF",p:5,q:"A small amount of strong acid is added to a buffer. What happens to the pH?",o:["It decreases a little","It increases a little","It drops to about 1","It stays exactly the same"],a:0,e:"Adding acid converts some base to its conjugate acid, so the pH decreases slightly. \"Adding acid creates more acid.\""},
+ {t:"BUF",p:5,q:"Using Le Chatelier for HA + H₂O ⇌ A⁻ + H₃O⁺: strong acid is added and H⁺ reacts with A⁻. Which way does the equilibrium shift?",o:["Left, [H₃O⁺] decreases","Right, [H₃O⁺] increases, pH decreases","No shift"],a:1,e:"[A⁻] decreases, so the system opposes the change by shifting to the right. [H₃O⁺] increases and the pH decreases (more acidic)."},
+ {t:"BUF",p:5,q:"Using Henderson-Hasselbalch: strong base is added and OH⁻ reacts with HA. What happens?",o:["[A⁻]/[HA] decreases, so pH decreases","[A⁻]/[HA] increases, so pH increases","The ratio stays the same"],a:1,e:"[HA] decreases, so the ratio [A⁻]/[HA] and its log value increase, and the pH increases."},
+ {t:"BUF",p:8,q:"Teacher's exam note: when acid or base is added to a buffer, what do you need to do?",o:["Calculate the new pH with an ICE table","Describe what happens using Le Chatelier and Henderson-Hasselbalch, without calculations","Nothing, it isn't tested","Calculate Kb"],a:1,e:"AP students only calculate the initial pH of a buffer. For additions, describe what occurs using Le Chatelier and H-H, without calculations."},
+
+ {t:"HH",p:7,q:"Example 2: A buffer is 0.110 M C₂H₃O₂⁻ and 0.090 M HC₂H₃O₂ (Ka = 1.8 × 10⁻⁵). Calculate the pH.",n:4.83,tol:0.02,e:"pH = −log(1.8 × 10⁻⁵) + log(0.110 / 0.090) = 4.74 + 0.087 = 4.83."},
+ {t:"HH",p:7,q:"What is the relationship between Ka and Kb for a conjugate acid-base pair?",o:["Ka + Kb = Kw","Ka × Kb = Kw","Ka / Kb = Kw","Ka = Kb"],a:1,e:"Ka × Kb = Kw, and pKa + pKb = pKw (14)."},
+ {t:"HH",p:8,q:"Calculate the pH of 5.0 M HC₂H₃O₂ + 3.0 M NaC₂H₃O₂ (Ka = 1.8 × 10⁻⁵).",n:4.52,tol:0.02,e:"[A⁻]/[HA] = 3.0 / 5.0 = 0.60, so pH = 4.74 + log 0.60 = 4.52."},
+ {t:"HH",p:8,q:"0.050 M HC₂H₃O₂ + 0.030 M NaC₂H₃O₂ has the same pH as 5.0 M + 3.0 M (4.52). Why?",o:["Both are very dilute","They have the same ratio [A⁻]/[HA] = 0.60","They have the same capacity","Coincidence"],a:1,e:"All solutions of a buffering system with the same [A⁻]/[HA] ratio have the same pH."},
+ {t:"HH",p:8,q:"A buffer solution is diluted with water. What happens to its pH?",o:["It increases","It decreases","It doesn't change"],a:2,e:"The ratio [base]/[acid] stays the same, so the pH doesn't change."},
+
+ {t:"EFF",p:9,q:"The effectiveness of a buffer depends on which two factors?",o:["Temperature and volume","The relative amounts and the absolute concentrations of acid and base","The pH and colour","Ka and Kw"],a:1,e:"1) The relative amounts of acid and base. 2) The absolute concentrations of acid and base."},
+ {t:"EFF",p:9,q:"0.010 mol OH⁻ is added to Solution I (0.10 mol HA + 0.10 mol A⁻) and Solution II (0.18 mol HA + 0.020 mol A⁻). Which buffer is more effective?",o:["Solution I (pH changes 1.8%)","Solution II (pH changes 5.0%)","They are equally effective"],a:0,e:"Solution I has equal amounts of acid and base, so its pH changes less. A buffer becomes less effective as the difference between acid and base amounts increases."},
+ {t:"EFF",p:9,q:"Solution I (0.50 mol HA + 0.50 mol A⁻) vs Solution II (0.050 mol HA + 0.050 mol A⁻). Which is the more effective buffer?",o:["Solution I (pH changes 0.4%)","Solution II (pH changes 3.6%)","They are equally effective"],a:0,e:"The buffer with greater amounts of acid and conjugate base is more resistant to pH changes."},
+ {t:"EFF",p:10,q:"For an effective buffer, the ratio [base]/[acid] must be in what range?",o:["0.01 to 100","0.10 to 10","1 to 14","Exactly 1"],a:1,e:"Effective buffers have [base]/[acid] between 0.10 and 10. Acid and base shouldn't differ by more than a factor of 10."},
+ {t:"EFF",p:10,q:"The pH of a buffer is determined by ___, and its capacity is determined by ___.",o:["The magnitudes of [HA] and [A⁻]; the ratio","The ratio [A⁻]/[HA]; the magnitudes of [HA] and [A⁻]","Ka; Kw","Volume; temperature"],a:1,e:"pH depends on the ratio [A⁻]/[HA]. Capacity depends on the magnitudes of [HA] and [A⁻]."},
+ {t:"EFF",p:10,q:"Best buffering capacity happens when…",o:["[Base]/[Acid] = 10, so pH = pKa + 1","[Base]/[Acid] = 1, so pH = pKa","pH = 7","[Acid] is zero"],a:1,e:"Best buffering capacity when [Base]/[Acid] = 1, i.e. pKa = pH."},
+ {t:"EFF",p:11,q:"What is the effective buffer range?",o:["pKa ± 1","pKa ± 2","pH 0 to 14","pKa ± 0.1"],a:0,e:"The buffer range is pKa ± 1. Choose an acid whose pKa is closest to the pH you want."},
+ {t:"EFF",p:11,q:"Example 1: Which acid would you choose to make a buffer at pH 4.25?",o:["Chlorous acid, pKa 1.95","Nitrous acid, pKa 3.34","Formic acid, pKa 3.74","Hypochlorous acid, pKa 7.54"],a:2,e:"Formic acid, because its pKa is closest to 4.25."},
+ {t:"EFF",p:11,q:"Example 1: For formic acid (pKa 3.74), calculate the ratio [base]/[acid] needed for pH 4.25.",n:3.24,tol:0.05,e:"log([base]/[acid]) = 4.25 − 3.74 = 0.51, so the ratio = 10^0.51 = 3.24."},
+ {t:"EFF",p:11,q:"Example 2: You need pH 4.30. Which acid works best?",o:["Chloroacetic acid, Ka 1.35 × 10⁻³","Propanoic acid, Ka 1.3 × 10⁻⁵","Benzoic acid, Ka 6.4 × 10⁻⁵","Hypochlorous acid, Ka 3.5 × 10⁻⁸"],a:2,e:"pKa values: 2.87, 4.89, 4.19 and 7.46. Benzoic acid (4.19) is closest to 4.30, so its ratio is closest to 1."},
+ {t:"EFF",p:11,q:"Example 2: For benzoic acid (Ka 6.4 × 10⁻⁵), calculate the ratio [HA]/[A⁻] needed for pH 4.30.",n:0.78,tol:0.03,e:"pKa = 4.19. log([A⁻]/[HA]) = 4.30 − 4.19 = 0.11, so [A⁻]/[HA] = 1.28 and [HA]/[A⁻] = 0.78."},
+
+ {t:"TIT",p:13,q:"In a titration, what is the titrant?",o:["The unknown solution in the flask","The solution of known concentration added from the burette","The indicator","The salt formed"],a:1,e:"The titrant has a known concentration and is added slowly from a burette to the analyte (unknown concentration)."},
+ {t:"TIT",p:13,q:"What is the end point?",o:["Where moles of acid = moles of base","The point where the indicator changes colour","Where pH = 0","Where the burette is empty"],a:1,e:"The end point is where the indicator changes colour. An indicator is a chemical that changes colour when the pH changes."},
+ {t:"TIT",p:13,q:"What is the equivalence (stoichiometric) point?",o:["Where the indicator changes colour","The point where enough titrant has been added to react exactly with the substance being titrated","Where pH = pKa","The start of the titration"],a:1,e:"Moles of acid and base are stoichiometrically equal there. It is defined by stoichiometry, not pH."},
+ {t:"TIT",p:14,q:"Strong acid titrated with a strong base: what is the pH at the equivalence point?",o:["Less than 7","Exactly 7","Greater than 7"],a:1,e:"Neither reactant is in excess, so pH = 7.00."},
+ {t:"TIT",p:15,q:"Strong acid + strong base titration: before the equivalence point, what is in excess?",o:["OH⁻","H₃O⁺","Neither"],a:1,e:"Before the equivalence point, H₃O⁺ is in excess. After it, OH⁻ is in excess."},
+ {t:"TIT",p:15,q:"Strong base titrated with strong acid: how does the curve look?",o:["Starts acidic, ends basic","Starts basic, becomes acidic after the equivalence point","Flat at pH 7"],a:1,e:"It is the mirror image of strong acid + strong base: it starts basic and becomes acidic after the equivalence point."},
+ {t:"TIT",p:18,q:"Weak acid titrated with a strong base: what is the pH at the equivalence point?",o:["Less than 7","Exactly 7","Greater than 7"],a:2,e:"Greater than 7 (about 8.79 in the notes' acetic acid example)."},
+ {t:"TIT",p:19,q:"Why is the pH at the equivalence point greater than 7 for a weak acid + strong base titration?",o:["Excess strong acid","Due to the basicity of the conjugate base of the weak acid","The indicator is basic","Water is basic"],a:1,e:"At equivalence, only the conjugate base (e.g. CH₃COO⁻) is left, and it is basic."},
+ {t:"TIT",p:18,q:"Where is the best buffering region on a weak acid + strong base curve?",o:["At the equivalence point","Near the pKa, halfway to the equivalence point","At the start","After the equivalence point"],a:1,e:"Near the pKa, at the half-equivalence point, where [HA] = [A⁻] and pH = pKa."},
+ {t:"TIT",p:18,q:"Which is NOT a feature of the weak acid + strong base curve?",o:["Small initial rise","Smaller rise at the equivalence point","pH at the equivalence point is 7","Less sharp rise at the equivalence point"],a:2,e:"For a weak acid, the pH at the equivalence point is greater than 7, not 7."},
+ {t:"TIT",p:19,q:"Strong acid and weak acid curves look very similar after the equivalence point. Why?",o:["Both have the same Ka","Excess OH⁻ controls the pH in both cases","Both are buffers","The indicator is the same"],a:1,e:"After the equivalence point, excess OH⁻ controls the pH region in both cases."},
+ {t:"TIT",p:19,q:"Why does the weak acid curve level off near the halfway point?",o:["The burette is empty","Buffering effect, where [HA] = [A⁻]","All acid has reacted","The pH reaches 7"],a:1,e:"It levels off due to the buffering effect where [HA] = [A⁻], then rises quickly again."},
+ {t:"TIT",p:25,q:"Weak base (NH₃) titrated with strong acid (HCl): what is the pH at the equivalence point?",o:["Less than 7","Exactly 7","Greater than 7"],a:0,e:"Acidic (5.26 in the notes), because the conjugate acid of the weak base (NH₄⁺) hydrolyzes."},
+ {t:"TIT",p:25,q:"In the NH₃ + HCl curve, the half-equivalence point is at pH 9.24, where [NH₃] = [NH₄⁺]. What does 9.24 equal?",o:["The pKa of NH₄⁺ (the conjugate acid)","The pH at equivalence","pKw","The starting pH"],a:0,e:"In the buffer region, pH = pKa + log([base]/[acid]), with the pKa of the conjugate acid. At half-equivalence, the ratio is 1, so pH = pKa = 9.24."},
+ {t:"TIT",p:25,q:"How does the weak base + strong acid curve start?",o:["Acidic","Basic","At pH 7"],a:1,e:"The curve starts basic (0.10 M NH₃ has pH 11.12) and goes down."}
+];
+
+const KEY = "chem-sbq3-v1";
+let st = {filter:"ALL", order:[], i:0, res:{}};
+function load(){ try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.res) st = Object.assign(st, s); } catch(e){} }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(st)); } catch(e){} }
+function pool(){ return Q.map((_, i) => i).filter(i => st.filter === "ALL" || st.filter === "MISSED" ? (st.filter === "ALL" || st.res[i] === false) : Q[i].t === st.filter); }
+function shuffle(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function start(f){ st.filter = f; st.order = shuffle(pool()); st.i = 0; save(); render(); }
+
+function renderFilters(){
+  const el = document.getElementById("filters"); el.innerHTML = "";
+  const missed = Object.values(st.res).filter(v => v === false).length;
+  [["ALL","All " + Q.length], ...Object.entries(T).map(([k, v]) => [k, v]), ["MISSED","Missed (" + missed + ")"]].forEach(([k, label]) => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = label; b.id = "f-" + k;
+    b.setAttribute("aria-pressed", st.filter === k); b.onclick = () => start(k); el.appendChild(b);
+  });
+}
+function renderStats(){
+  const done = Object.keys(st.res).length, right = Object.values(st.res).filter(Boolean).length;
+  document.getElementById("stats").innerHTML = `<span>Answered <b>${done}/${Q.length}</b></span><span>Correct <b>${right}</b></span><span>Missed <b>${done - right}</b></span>`;
+  document.getElementById("cover").style.width = (100 - done / Q.length * 100) + "%";
+}
+function render(){
+  renderFilters(); renderStats();
+  const card = document.getElementById("card");
+  if (!st.order.length){ card.innerHTML = `<div class="done"><p class="q">No questions here yet.</p><p class="note">${st.filter === "MISSED" ? "You haven't missed any. Nice." : ""}</p><div><button class="btn" id="go-all">Practise all questions</button></div></div>`; document.getElementById("go-all").onclick = () => start("ALL"); return; }
+  if (st.i >= st.order.length) return renderDone(card);
+  const qi = st.order[st.i], q = Q[qi];
+  card.innerHTML = `<div class="meta"><span>${T[q.t]} · ${st.i + 1} of ${st.order.length}</span><span class="page">Notes p.${q.p}</span></div><p class="q">${q.q}</p><div id="ans"></div><div id="fb"></div><div class="nav"><button class="btn ghost" id="prev">Back</button><button class="btn" id="next" hidden>Next question</button></div>`;
+  const ans = document.getElementById("ans");
+  if (q.o){
+    ans.className = "opts";
+    q.o.forEach((t, k) => { const b = document.createElement("button"); b.className = "opt"; b.id = "opt-" + k; b.innerHTML = `<span class="k">${"ABCD"[k]}</span><span>${t}</span>`; b.onclick = () => answer(qi, k === q.a, k); ans.appendChild(b); });
+  } else {
+    ans.innerHTML = `<form class="num" id="numf"><input id="numin" inputmode="decimal" autocomplete="off" placeholder="Your answer" aria-label="Your answer"><button class="btn" type="submit">Check</button></form>`;
+    document.getElementById("numf").onsubmit = e => { e.preventDefault(); const v = parseFloat(document.getElementById("numin").value.replace(",", ".").replace("%", "")); if (isNaN(v)) return; answer(qi, Math.abs(v - q.n) <= q.tol); };
+  }
+  document.getElementById("prev").onclick = () => { if (st.i > 0){ st.i--; save(); render(); } };
+  document.getElementById("next").onclick = () => { st.i++; save(); render(); };
+}
+function answer(qi, ok, k){
+  const q = Q[qi]; st.res[qi] = ok; save();
+  if (q.o){ document.querySelectorAll(".opt").forEach((b, j) => { b.disabled = true; if (j === q.a) b.classList.add("right"); else if (j === k) b.classList.add("wrong"); }); }
+  else { document.querySelector("#numf button").disabled = true; document.getElementById("numin").disabled = true; }
+  const fb = document.getElementById("fb");
+  fb.className = "fb " + (ok ? "ok" : "no");
+  fb.innerHTML = `<strong>${ok ? "Correct" : "Not quite" + (q.n !== undefined ? ". Answer: " + q.n : "")}</strong>${q.e}`;
+  document.getElementById("next").hidden = false; document.getElementById("next").focus();
+  renderStats(); renderFilters();
+}
+function renderDone(card){
+  const ids = st.order, right = ids.filter(i => st.res[i]).length, missed = ids.filter(i => st.res[i] === false);
+  card.innerHTML = `<div class="done"><div class="big">${right}/${ids.length}</div><p class="q">Round finished</p>${missed.length ? `<div class="missed">${missed.map(i => `<div><b>p.${Q[i].p}</b> · ${Q[i].q.split("<br>")[0]}</div>`).join("")}</div>` : `<p>No mistakes this round.</p>`}<div class="nav" style="justify-content:center">${missed.length ? `<button class="btn" id="redo">Redo missed questions</button>` : ""}<button class="btn ghost" id="again">New round</button></div></div>`;
+  const r = document.getElementById("redo"); if (r) r.onclick = () => start("MISSED");
+  document.getElementById("again").onclick = () => start(st.filter === "MISSED" ? "ALL" : st.filter);
+}
+load();
+if (!st.order.length || st.order.some(i => !Q[i])) { st.order = shuffle(pool()); st.i = 0; }
+render();
+</script>

@@ -1,0 +1,252 @@
+<title>Class Recorder Notes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: lesson list on the left (iPad), the open lesson on the right with Summary / Flashcards / Quiz tabs; stacks on phone. */
+:root {
+  --bg: #eef1f5; --surface: #ffffff; --ink: #172036; --muted: #5d6880; --line: #d9dfe8;
+  --lamp: #d9891a; --lamp-soft: #fbefd9; --teal: #2f7d74; --teal-soft: #dff0ed; --warn: #b4421f; --warn-soft: #fbe7e0; --good: #2e7d4f; --good-soft: #e1f3e8;
+  --display: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1322; --surface: #151d31; --ink: #e8ecf5; --muted: #98a3bd; --line: #26314a;
+  --lamp: #f2a93b; --lamp-soft: #3a2c14; --teal: #5cc2b3; --teal-soft: #15302c; --warn: #ff8a66; --warn-soft: #3b1d14; --good: #6fd197; --good-soft: #14301f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d1322; --surface: #151d31; --ink: #e8ecf5; --muted: #98a3bd; --line: #26314a;
+  --lamp: #f2a93b; --lamp-soft: #3a2c14; --teal: #5cc2b3; --teal-soft: #15302c; --warn: #ff8a66; --warn-soft: #3b1d14; --good: #6fd197; --good-soft: #14301f; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 17px/1.55 var(--body); }
+.app { max-width: 1180px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+h1 { font: 700 28px var(--display); margin: 0; letter-spacing: -.4px; }
+.sub { color: var(--muted); margin: 2px 0 0; font-size: 15px; }
+.grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 16px; align-items: start; }
+@media (max-width: 820px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.eyebrow { font-size: 12.5px; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 15.5px; }
+.notice { border-radius: 12px; padding: 10px 13px; background: var(--lamp-soft); font-size: 14.5px; }
+.notice.warn { background: var(--warn-soft); }
+label { display: grid; gap: 4px; font-size: 13.5px; color: var(--muted); font-weight: 700; }
+input, select, textarea { font: 16px var(--body); padding: 10px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); min-width: 0; width: 100%; box-sizing: border-box; }
+textarea { min-height: 170px; resize: vertical; line-height: 1.5; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn { border: 0; border-radius: 12px; padding: 12px 18px; font: 700 16px var(--body); cursor: pointer; background: var(--lamp); color: #1b1305; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.btn.small { padding: 7px 12px; font-size: 14px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.list { display: grid; gap: 8px; }
+.lesson { text-align: left; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 12px; padding: 11px 13px; cursor: pointer; font: 16px var(--body); display: grid; gap: 2px; }
+.lesson[aria-current="true"] { border-color: var(--lamp); background: var(--lamp-soft); }
+.lesson b { font-size: 16px; }
+.lesson span { font-size: 13.5px; color: var(--muted); }
+.tabs { display: flex; gap: 4px; background: var(--bg); border-radius: 12px; padding: 4px; width: fit-content; max-width: 100%; flex-wrap: wrap; }
+.tab { border: 0; background: transparent; color: var(--muted); font: 700 15px var(--body); padding: 8px 14px; border-radius: 9px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.out h2 { font: 700 24px/1.2 var(--display); margin: 0; text-wrap: balance; }
+.out h3 { font: 700 17px var(--display); margin: 8px 0 2px; }
+.out ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.flag { border-left: 4px solid var(--warn); background: var(--warn-soft); padding: 8px 12px; border-radius: 8px; }
+.terms { display: grid; gap: 6px; }
+.terms div { display: grid; grid-template-columns: minmax(110px, 1fr) 2fr; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.formula { font-family: var(--mono); background: var(--bg); padding: 6px 10px; border-radius: 8px; display: inline-block; }
+.card { border: 2px solid var(--teal); border-radius: 16px; min-height: 190px; display: grid; place-items: center; padding: 22px; text-align: center; font-size: 21px; cursor: pointer; background: var(--teal-soft); color: var(--ink); width: 100%; font-family: var(--body); }
+.card.back { background: var(--surface); }
+.q { font-size: 19px; font-weight: 700; margin: 0; }
+.opts { display: grid; gap: 8px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 10px; padding: 11px 14px; font: 16px var(--body); cursor: pointer; }
+.opt.right { border-color: var(--good); background: var(--good-soft); }
+.opt.wrong { border-color: var(--warn); background: var(--warn-soft); }
+.opt:disabled { cursor: default; }
+.fb { border-radius: 10px; padding: 10px 13px; background: var(--bg); font-size: 15.5px; }
+.count { font: 500 14px var(--mono); color: var(--muted); }
+.thinking { color: var(--muted); font-style: italic; }
+.foot { font-size: 13.5px; color: var(--muted); }
+.thumbs { display: flex; gap: 6px; flex-wrap: wrap; }
+.thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--lamp); outline-offset: 2px; }
+</style>
+
+<div class="app">
+  <header>
+    <h1>Class Recorder Notes</h1>
+    <p class="sub">Turn a recorded lesson into a summary, flashcards and a quiz.</p>
+  </header>
+
+  <div class="grid">
+    <div style="display:grid;gap:16px;min-width:0">
+      <section class="panel">
+        <div class="eyebrow">1 · Record the class</div>
+        <ol class="steps">
+          <li><b>Ask your teacher first.</b> Recording people without permission can break school rules and UAE law.</li>
+          <li>Record with your iPad or phone's recorder app. Put it near the teacher.</li>
+          <li>After class, open the recording and copy its <b>transcript</b> (text). Many recorder apps can make one.</li>
+          <li>Paste it below. Add photos of the board or slides if you have them.</li>
+        </ol>
+      </section>
+
+      <section class="panel">
+        <div class="eyebrow">2 · Add the lesson</div>
+        <div class="two">
+          <label>Subject<input id="subject" placeholder="e.g. Chemistry"></label>
+          <label>Lesson<input id="title" placeholder="e.g. 16.4 Titration curves"></label>
+        </div>
+        <label>Transcript<textarea id="transcript" placeholder="Paste the class transcript here…"></textarea></label>
+        <div class="row">
+          <label class="btn ghost small" style="display:inline-block">Upload .txt<input type="file" id="txtfile" accept=".txt,text/plain" hidden></label>
+          <label class="btn ghost small" style="display:inline-block" id="photo-label">Add board photos<input type="file" id="photos" accept="image/*" multiple hidden></label>
+          <span class="count" id="chars">0 characters</span>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+        <div class="row"><button class="btn" id="make">Make summary, flashcards and quiz</button><button class="btn ghost small" id="stop" hidden>Stop</button></div>
+        <p class="foot" id="make-note"></p>
+      </section>
+
+      <section class="panel">
+        <div class="eyebrow">Your lessons</div>
+        <div class="list" id="lessons"></div>
+      </section>
+    </div>
+
+    <section class="panel out" id="out">
+      <div class="eyebrow">Study set</div>
+      <h2>No lesson open yet</h2>
+      <p class="sub">Paste a transcript and press <b>Make summary, flashcards and quiz</b>. Your study set appears here and is saved under "Your lessons".</p>
+    </section>
+  </div>
+
+  <p class="foot" id="store-note">Loading…</p>
+</div>
+
+<script>
+let db = null, sample = null, lessons = [], openId = null, tab = "summary", photos = [], ctl = null;
+let cardIdx = 0, cardBack = false, quizIdx = 0, quizAns = {};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const MAX_CHARS = 120000;
+
+$("transcript").oninput = () => { $("chars").textContent = $("transcript").value.length.toLocaleString() + " characters" + ($("transcript").value.length > MAX_CHARS ? " (only the first 120,000 are used)" : ""); };
+$("txtfile").onchange = async e => { const f = e.target.files[0]; if (!f) return; $("transcript").value = await f.text(); $("transcript").oninput(); };
+$("photos").onchange = e => { photos = [...e.target.files].slice(0, 5); $("thumbs").innerHTML = ""; photos.forEach(p => { const img = document.createElement("img"); img.alt = "Board photo"; img.src = URL.createObjectURL(p); $("thumbs").appendChild(img); }); };
+
+function prompt(subject, title, transcript, hasPhotos) {
+  return `You are helping a Grade 12 student in the UAE study from a recording of their own class.
+Subject: ${subject || "unknown"}. Lesson: ${title || "unknown"}.
+${hasPhotos ? "Photos of the board or slides from this lesson are attached. Use them together with the transcript.\n" : ""}
+Rules:
+- Use ONLY what is in the transcript${hasPhotos ? " and photos" : ""}. Do not add facts the teacher did not say. If something is unclear or the transcript seems garbled, list it under "unclear" instead of guessing.
+- Simple, short English. Keep chemical formulas, equations and units exact.
+- "teacherFlags": anything the teacher said is important, will be on the test, should be memorized, or repeated several times. Quote or closely paraphrase.
+
+Reply with only a JSON object of this shape:
+{"title": string, "summary": [6-10 short bullet strings], "teacherFlags": [strings], "keyTerms": [{"term": string, "meaning": string}], "formulas": [strings], "flashcards": [10-15 of {"front": string, "back": string}], "quiz": [8-10 of {"q": string, "options": [4 strings], "answer": 0-3 index, "why": string}], "unclear": [strings]}
+
+Transcript:
+"""
+${transcript.slice(0, MAX_CHARS)}
+"""`;
+}
+
+$("make").onclick = async () => {
+  const transcript = $("transcript").value.trim();
+  if (transcript.length < 200 && !photos.length) { $("make-note").textContent = "Paste a longer transcript first (at least a few paragraphs)."; return; }
+  if (!sample) { $("make-note").textContent = "Claude isn't available in this view, so the study set can't be made here."; return; }
+  ctl = new AbortController(); $("make").disabled = true; $("stop").hidden = false;
+  $("make-note").innerHTML = `<span class="thinking">Reading the lesson… this can take up to a minute.</span>`;
+  try {
+    const opts = { signal: ctl.signal, cache: false };
+    if (photos.length) opts.images = photos;
+    const set = await sample.json(prompt($("subject").value.trim(), $("title").value.trim(), transcript, photos.length > 0), opts);
+    if (!set || !Array.isArray(set.flashcards)) throw { code: "invalid_json" };
+    const lesson = { id: "l" + Date.now().toString(36), subject: $("subject").value.trim(), title: $("title").value.trim() || set.title || "Lesson", createdAt: Date.now(), transcript: transcript.slice(0, 80000), set };
+    await saveLesson(lesson);
+    openId = lesson.id; tab = "summary"; cardIdx = 0; quizIdx = 0; quizAns = {};
+    $("transcript").value = ""; $("transcript").oninput(); photos = []; $("thumbs").innerHTML = "";
+    $("make-note").textContent = "Done. Saved under Your lessons.";
+    render();
+  } catch (e) {
+    const msg = { cancelled: "Stopped.", not_granted: "Claude wasn't allowed for this page, so it can't make study sets here.", rate_limited: "You've hit a usage limit. Try again in a little while.", prompt_too_large: "The transcript is too long. Paste half of the class at a time.", invalid_json: "The answer came back in the wrong format. Press the button to try again.", images_unavailable: "Photos can't be sent here. Remove them and try again.", image_rejected: "One of the photos couldn't be read. Try a different photo.", refused: "Claude couldn't process this transcript. Check that it's the class text." }[e && e.code] || "Something went wrong. Try again.";
+    $("make-note").textContent = msg;
+  } finally { $("make").disabled = false; $("stop").hidden = true; }
+};
+$("stop").onclick = () => ctl && ctl.abort();
+
+async function saveLesson(l) {
+  lessons = [l, ...lessons.filter(x => x.id !== l.id)];
+  try { localStorage.setItem("class-notes", JSON.stringify(lessons.slice(0, 20))); } catch (e) {}
+  if (db) { try { await db.collection("lessons").doc(l.id).set(l); } catch (e) { $("store-note").textContent = e && e.code === "quota_exceeded" ? "Your lessons storage is full. Delete old lessons." : "Couldn't save online; saved on this device."; } }
+  renderList();
+}
+async function deleteLesson(id) {
+  lessons = lessons.filter(x => x.id !== id); if (openId === id) openId = null;
+  try { localStorage.setItem("class-notes", JSON.stringify(lessons.slice(0, 20))); } catch (e) {}
+  if (db) { try { await db.collection("lessons").doc(id).delete(); } catch (e) {} }
+  render();
+}
+
+function renderList() {
+  $("lessons").innerHTML = lessons.length ? lessons.map(l => `<button class="lesson" data-id="${l.id}" aria-current="${l.id === openId}"><b>${esc(l.title)}</b><span>${esc(l.subject || "No subject")} · ${new Date(l.createdAt).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })} · ${(l.set.flashcards || []).length} cards · ${(l.set.quiz || []).length} questions</span></button>`).join("") : `<p class="sub">No lessons yet. Your first one will show up here.</p>`;
+  document.querySelectorAll(".lesson").forEach(b => b.onclick = () => { openId = b.dataset.id; tab = "summary"; cardIdx = 0; cardBack = false; quizIdx = 0; quizAns = {}; render(); });
+}
+function render() {
+  renderList();
+  const l = lessons.find(x => x.id === openId), out = $("out");
+  if (!l) { out.innerHTML = `<div class="eyebrow">Study set</div><h2>No lesson open yet</h2><p class="sub">Paste a transcript and press <b>Make summary, flashcards and quiz</b>. Your study set appears here and is saved under "Your lessons".</p>`; return; }
+  const s = l.set;
+  const tabs = [["summary", "Summary"], ["cards", "Flashcards"], ["quiz", "Quiz"]].map(([k, t]) => `<button class="tab" data-t="${k}" aria-selected="${tab === k}">${t}</button>`).join("");
+  let body = "";
+  if (tab === "summary") {
+    body = `${(s.teacherFlags || []).length ? `<h3>Your teacher said this matters</h3>${s.teacherFlags.map(f => `<div class="flag">${esc(f)}</div>`).join("")}` : ""}
+      <h3>Summary</h3><ul>${(s.summary || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      ${(s.keyTerms || []).length ? `<h3>Key terms</h3><div class="terms">${s.keyTerms.map(t => `<div><b>${esc(t.term)}</b><span>${esc(t.meaning)}</span></div>`).join("")}</div>` : ""}
+      ${(s.formulas || []).length ? `<h3>Formulas</h3><div class="row">${s.formulas.map(f => `<span class="formula">${esc(f)}</span>`).join("")}</div>` : ""}
+      ${(s.unclear || []).length ? `<h3>Unclear in the recording: check your notes or ask your teacher</h3><ul>${s.unclear.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}`;
+  } else if (tab === "cards") {
+    const cards = s.flashcards || [], c = cards[cardIdx] || { front: "", back: "" };
+    body = cards.length ? `<div class="count">Card ${cardIdx + 1} of ${cards.length} · tap to flip</div>
+      <button class="card${cardBack ? " back" : ""}" id="card">${esc(cardBack ? c.back : c.front)}</button>
+      <div class="row"><button class="btn ghost" id="prev"${cardIdx === 0 ? " disabled" : ""}>Back</button><button class="btn" id="next">${cardIdx === cards.length - 1 ? "Start again" : "Next card"}</button></div>` : `<p class="sub">No flashcards in this set.</p>`;
+  } else {
+    const qs = s.quiz || [];
+    if (quizIdx >= qs.length) {
+      const right = qs.filter((q, i) => quizAns[i] === q.answer).length, missed = qs.map((q, i) => i).filter(i => quizAns[i] !== qs[i].answer);
+      body = `<h2>${right} / ${qs.length}</h2>${missed.length ? `<h3>Review these</h3><ul>${missed.map(i => `<li><b>${esc(qs[i].q)}</b><br>${esc(qs[i].options[qs[i].answer])}. ${esc(qs[i].why)}</li>`).join("")}</ul>` : `<p>No mistakes.</p>`}<div class="row"><button class="btn" id="retry">Do the quiz again</button></div>`;
+    } else {
+      const q = qs[quizIdx], a = quizAns[quizIdx];
+      body = `<div class="count">Question ${quizIdx + 1} of ${qs.length}</div><p class="q">${esc(q.q)}</p>
+        <div class="opts">${q.options.map((o, k) => `<button class="opt${a !== undefined ? (k === q.answer ? " right" : k === a ? " wrong" : "") : ""}" data-k="${k}"${a !== undefined ? " disabled" : ""}>${"ABCD"[k]}. ${esc(o)}</button>`).join("")}</div>
+        ${a !== undefined ? `<div class="fb"><b>${a === q.answer ? "Correct." : "Not quite."}</b> ${esc(q.why)}</div><div class="row"><button class="btn" id="qnext">${quizIdx === qs.length - 1 ? "See score" : "Next question"}</button></div>` : ""}`;
+    }
+  }
+  out.innerHTML = `<div class="eyebrow">${esc(l.subject || "Lesson")}</div><h2>${esc(l.title)}</h2><div class="tabs" role="tablist">${tabs}</div>${body}
+    <div class="row" style="justify-content:flex-end"><button class="btn ghost small" id="del">Delete lesson</button></div>`;
+  out.querySelectorAll(".tab").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+  const card = $("card"); if (card) card.onclick = () => { cardBack = !cardBack; render(); };
+  const nx = $("next"); if (nx) nx.onclick = () => { cardIdx = (cardIdx + 1) % (s.flashcards.length); cardBack = false; render(); };
+  const pv = $("prev"); if (pv) pv.onclick = () => { cardIdx = Math.max(0, cardIdx - 1); cardBack = false; render(); };
+  out.querySelectorAll(".opt").forEach(b => b.onclick = () => { quizAns[quizIdx] = +b.dataset.k; render(); });
+  const qn = $("qnext"); if (qn) qn.onclick = () => { quizIdx++; render(); };
+  const rt = $("retry"); if (rt) rt.onclick = () => { quizIdx = 0; quizAns = {}; render(); };
+  const del = $("del"); del.onclick = () => { if (del.dataset.armed) deleteLesson(l.id); else { del.dataset.armed = "1"; del.textContent = "Tap again to delete"; } };
+}
+
+try { const ls = JSON.parse(localStorage.getItem("class-notes")); if (Array.isArray(ls)) lessons = ls; } catch (e) {}
+render();
+
+(async () => {
+  const c = window.claude;
+  sample = c && c.use ? await c.use("sample") : null;
+  if (!sample) { $("make").disabled = true; $("make-note").textContent = "Claude isn't available in this view, so new study sets can't be made here. Saved lessons still work."; }
+  else { const lim = await sample.limits().catch(() => null); if (!lim || !lim.images) { $("photo-label").hidden = true; } }
+  db = c && c.use ? await c.use("db") : null;
+  if (!db) { $("store-note").textContent = "Lessons are saved on this device only."; return; }
+  $("store-note").textContent = "Lessons sync across your iPad and phone.";
+  db.collection("lessons").orderBy("createdAt", "desc").limit(50).onSnapshot(snap => {
+    lessons = snap.docs.map(d => d.data()).filter(Boolean);
+    try { localStorage.setItem("class-notes", JSON.stringify(lessons.slice(0, 20))); } catch (e) {}
+    render();
+  }, () => { $("store-note").textContent = "Sync paused; lessons on this device still work."; });
+})();
+</script>
