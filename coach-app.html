@@ -178,7 +178,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 <script>
 const DEFAULTS = { wake: "05:30", leave: "06:40", schoolStart: "07:30", schoolEnd: "15:00", home: "16:10", dinner: "18:45", dinnerMins: 35, windDown: "21:15", bedtime: "21:30", weekendWake: "07:30", nap: true, schoolDays: [1, 2, 3, 4, 5], block: 45, brk: 10 };
 let S = { settings: { ...DEFAULTS }, exams: [], days: {} };
-let view = "today", dbRef = null, saving = false, dirty = false, saveTimer = null, focusT = null, sleepOverride = 0;
+let view = "today", dbRef = null, saving = false, dirty = false, saveTimer = null, focusT = null, sleepOverride = 0, remoteLoaded = false;
 
 /* ---------- time helpers ---------- */
 const toMin = s => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
@@ -397,7 +397,7 @@ function save() {
 }
 function prune() { const keep = Object.keys(S.days).sort().slice(-14); const nd = {}; keep.forEach(k => nd[k] = S.days[k]); S.days = nd; }
 async function flush() {
-  if (!dbRef || saving || !dirty) return;
+  if (!dbRef || !remoteLoaded || saving || !dirty) return;
   saving = true; dirty = false; prune();
   try { await dbRef.set(JSON.parse(JSON.stringify(S))); } catch (e) { document.getElementById("store-note").textContent = "Couldn't save online just now; saved on this device."; }
   saving = false; if (dirty) flush();
@@ -447,7 +447,9 @@ setInterval(() => { if (!focusT && view === "today") renderToday(); checkSleep()
   if (!db) { note.textContent = "Saved on this device only."; return; }
   dbRef = db.doc("coach/state");
   note.textContent = "Synced across your iPad and phone.";
-  dbRef.onSnapshot(snap => { if (snap.exists && !snap.metadata.hasPendingWrites && !saving && !dirty) applyRemote(snap.data()); }, () => { note.textContent = "Sync paused; saved on this device."; });
+  try { const first = await dbRef.get(); if (first && first.exists) applyRemote(first.data()); } catch (e) {}
+  remoteLoaded = true;
+  dbRef.onSnapshot(snap => { try { const pending = snap.metadata && snap.metadata.hasPendingWrites; if (snap.exists && !pending && !saving && !dirty) applyRemote(snap.data()); } catch (e) {} }, () => { note.textContent = "Sync paused; saved on this device."; });
   if (dirty) flush();
 })();
 </script>
