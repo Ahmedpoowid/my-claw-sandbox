@@ -99,6 +99,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       <button class="tab" role="tab" id="tab-today" data-v="today">Today</button>
       <button class="tab" role="tab" id="tab-week" data-v="week">Week</button>
       <button class="tab" role="tab" id="tab-exams" data-v="exams">Exams</button>
+      <button class="tab" role="tab" id="tab-homework" data-v="homework">Homework</button>
       <button class="tab" role="tab" id="tab-class" data-v="class">Class</button>
       <button class="tab" role="tab" id="tab-settings" data-v="settings">My times</button>
     </nav>
@@ -129,6 +130,20 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       </form>
     </div>
     <div class="cards" id="exam-list" style="margin-top:12px"></div>
+  </section>
+
+  <section id="v-homework" hidden>
+    <div class="panel">
+      <div class="eyebrow">Add homework</div>
+      <form class="f" id="hw-form">
+        <label>What<input id="hw-title" required placeholder="e.g. Chem worksheet 16.4"></label>
+        <label>Subject<input id="hw-subject" placeholder="e.g. Chemistry"></label>
+        <label>Due<input id="hw-due" type="date" required></label>
+        <button class="btn" type="submit">Add</button>
+      </form>
+      <p class="foot">Homework due in the next 2 days goes into your study blocks first.</p>
+    </div>
+    <div class="cards" id="hw-list" style="margin-top:12px"></div>
   </section>
 
   <section id="v-class" hidden>
@@ -177,7 +192,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 
 <script>
 const DEFAULTS = { wake: "05:30", leave: "06:40", schoolStart: "07:30", schoolEnd: "15:00", home: "16:10", dinner: "18:45", dinnerMins: 35, windDown: "21:15", bedtime: "21:30", weekendWake: "07:30", nap: true, schoolDays: [1, 2, 3, 4, 5], block: 45, brk: 10 };
-let S = { settings: { ...DEFAULTS }, exams: [], days: {} };
+let S = { settings: { ...DEFAULTS }, exams: [], homework: [], days: {} };
 let view = "today", dbRef = null, saving = false, dirty = false, saveTimer = null, focusT = null, sleepOverride = 0, remoteLoaded = false;
 
 /* ---------- time helpers ---------- */
@@ -201,6 +216,13 @@ function score(e, day) {
   return w * (1 / (left + 1)) * (e.retake ? 0.5 : 1);
 }
 function taskQueue(day, n) {
+  const k = key(day);
+  const hw = (S.homework || []).filter(h => !h.done && h.due && h.due >= k && daysBetween(day, parseKey(h.due)) <= 2).sort((a, b) => a.due.localeCompare(b.due)).slice(0, n);
+  const hwTasks = hw.map(h => ({ title: "Homework: " + h.title + (h.subject ? " (" + h.subject + ")" : ""), subject: h.subject || "Homework" }));
+  return [...hwTasks, ...examQueue(day, n - hwTasks.length)];
+}
+function examQueue(day, n) {
+  if (n <= 0) return [];
   const ex = examsFrom(day).filter(e => !(e.date && daysBetween(day, parseKey(e.date)) === 0));
   if (!ex.length) return Array.from({ length: n }, (_, i) => ({ title: ["Homework due soonest", "Review this week's notes", "SAT practice set"][i % 3], subject: "" }));
   const used = {}; const out = [];
@@ -372,7 +394,20 @@ function renderSettings() {
      <div class="chips" style="grid-column:1/-1">${days.map((d, i) => `<label class="check"><input type="checkbox" id="s-day${i}"${s.schoolDays.includes(i) ? " checked" : ""}> ${d}</label>`).join("")}</div>
      <button class="btn" type="submit">Save my times</button>`;
 }
-function renderAll() { renderToday(); renderWeek(); renderExams(); if (view !== "settings") renderSettings(); }
+function renderHomework() {
+  const d = new Date();
+  const list = [...(S.homework || [])].sort((a, b) => (a.done - b.done) || (a.due || "9999").localeCompare(b.due || "9999"));
+  document.getElementById("hw-list").innerHTML = list.length ? list.map(h => {
+    const n = h.due ? daysBetween(d, parseKey(h.due)) : null;
+    const when = n === null ? "no date" : h.done ? "done" : n < 0 ? "late" : n === 0 ? "today" : n === 1 ? "tomorrow" : n + "d";
+    return `<div class="card"${h.done ? ' style="opacity:.55"' : ""}><div class="days"${!h.done && n !== null && n < 0 ? "" : !h.done && n !== null && n <= 1 ? "" : ' style="color:var(--muted)"'}>${when}</div><h3${h.done ? ' style="text-decoration:line-through"' : ""}>${esc(h.title)}</h3>
+      <div class="meta">${h.subject ? esc(h.subject) + " · " : ""}${h.due ? parseKey(h.due).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) : ""}</div>
+      <div class="row"><label class="check"><input type="checkbox" data-hwdone="${h.id}"${h.done ? " checked" : ""}> Done</label><button class="btn quiet" data-hwdel="${h.id}">Remove</button></div></div>`;
+  }).join("") : `<div class="card"><h3>No homework yet</h3><div class="meta">Add homework above. Anything due in the next 2 days gets a study block first.</div></div>`;
+  document.querySelectorAll("[data-hwdone]").forEach(c => c.onchange = () => { const h = S.homework.find(x => x.id === c.dataset.hwdone); h.done = c.checked; clearPlans(); save(); renderAll(); });
+  document.querySelectorAll("[data-hwdel]").forEach(b => b.onclick = () => { S.homework = S.homework.filter(x => x.id !== b.dataset.hwdel); clearPlans(); save(); renderAll(); });
+}
+function renderAll() { renderToday(); renderWeek(); renderExams(); renderHomework(); if (view !== "settings") renderSettings(); }
 function clearPlans() { Object.values(S.days).forEach(d => { d.plan = null; d.cut = []; }); }
 
 /* ---------- sleep guard ---------- */
@@ -404,14 +439,14 @@ async function flush() {
 }
 function applyRemote(data) {
   if (!data) return;
-  S = { settings: { ...DEFAULTS, ...(data.settings || {}) }, exams: Array.isArray(data.exams) ? data.exams : [], days: data.days || {} };
+  S = { settings: { ...DEFAULTS, ...(data.settings || {}) }, exams: Array.isArray(data.exams) ? data.exams : [], homework: Array.isArray(data.homework) ? data.homework : [], days: data.days || {} };
   renderAll(); checkSleep();
 }
 
 /* ---------- wiring ---------- */
 function show(v) {
   view = v;
-  ["today", "week", "exams", "class", "settings"].forEach(x => { document.getElementById("v-" + x).hidden = x !== v; document.getElementById("tab-" + x).setAttribute("aria-selected", x === v); });
+  ["today", "week", "exams", "homework", "class", "settings"].forEach(x => { document.getElementById("v-" + x).hidden = x !== v; document.getElementById("tab-" + x).setAttribute("aria-selected", x === v); });
   if (v === "settings") renderSettings();
   try { localStorage.setItem("coach-tab", v); } catch (e) {}
 }
@@ -420,6 +455,13 @@ document.getElementById("exam-form").onsubmit = e => {
   e.preventDefault();
   const v = id => document.getElementById(id).value.trim();
   S.exams.push({ id: "e" + Date.now().toString(36), name: v("ex-name"), subject: v("ex-subject"), date: v("ex-date"), type: v("ex-type"), topics: v("ex-topics").split(",").map(x => x.trim()).filter(Boolean), confidence: v("ex-conf"), retake: document.getElementById("ex-retake").checked });
+  e.target.reset(); clearPlans(); save(); renderAll();
+};
+document.getElementById("hw-form").onsubmit = e => {
+  e.preventDefault();
+  const v = id => document.getElementById(id).value.trim();
+  S.homework = S.homework || [];
+  S.homework.push({ id: "h" + Date.now().toString(36), title: v("hw-title"), subject: v("hw-subject"), due: v("hw-due"), done: false });
   e.target.reset(); clearPlans(); save(); renderAll();
 };
 document.getElementById("set-form").onsubmit = e => {
