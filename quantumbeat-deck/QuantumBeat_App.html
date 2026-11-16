@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuantumBeat | Heart Signal Demo</title>
+<style>
+:root{--bg:#07111f;--panel:#101f33;--panel2:#142840;--text:#edf5ff;--muted:#9bb0c9;--cyan:#43d9e6;--green:#54d69a;--red:#ff7185;--line:#28415d}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(145deg,#07111f,#0b1b2e 60%,#10263b);color:var(--text);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+header{padding:28px 5vw 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#43d9e6,#4777ff);display:grid;place-items:center;color:#07111f;font-size:24px;font-weight:bold}
+h1{font-size:24px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:5px}
+.pill{border:1px solid #2e526c;border-radius:30px;padding:8px 13px;color:var(--cyan);font-size:12px}
+main{max-width:1200px;margin:0 auto;padding:28px 5vw 50px}
+.intro{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+h2{font-size:22px;margin:0 0 8px}.intro p{margin:0;color:var(--muted);line-height:1.5;max-width:650px;font-size:14px}
+button{border:0;border-radius:10px;padding:12px 18px;font-weight:bold;cursor:pointer;background:var(--cyan);color:#07111f;font-size:14px}
+button.secondary{background:#1d3650;color:var(--text);border:1px solid #35516d}
+button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.card{background:rgba(16,31,51,.94);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 12px 35px #0002}
+.card h3{font-size:15px;margin:0 0 16px;color:#d9e9fa}
+.chart-wrap{height:260px;position:relative}canvas{width:100%;height:100%;display:block}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.metric{background:var(--panel2);border-radius:12px;padding:13px}.metric span{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.metric strong{font-size:23px}
+.status{display:flex;align-items:center;gap:9px;font-size:14px;margin:4px 0 15px}.dot{width:9px;height:9px;border-radius:50%;background:var(--muted)}.dot.green{background:var(--green);box-shadow:0 0 12px #54d69a88}.dot.red{background:var(--red);box-shadow:0 0 12px #ff718588}
+.alert{border-radius:12px;padding:14px;background:#173c3b;border:1px solid #28665d;color:#baf5dc;font-size:13px;line-height:1.5}.alert.warning{background:#482432;border-color:#844052;color:#ffd0d7}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:16px}
+.step{background:#12253a;border:1px solid var(--line);border-radius:12px;padding:12px 10px;min-height:92px}
+.step b{color:var(--cyan);font-size:11px}.step span{display:block;font-size:12px;line-height:1.35;margin-top:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.info{color:var(--muted);font-size:13px;line-height:1.55}
+ul{padding-left:18px;color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:0}
+.small{font-size:11px;color:var(--muted);line-height:1.5;margin-top:13px}
+.bar{height:7px;background:#233a53;border-radius:10px;overflow:hidden;margin-top:10px}.bar div{height:100%;width:0;background:var(--cyan);transition:width .3s}
+@media(max-width:800px){.grid,.two{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:440px){.metrics{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}header{padding:20px 5vw}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">Q</div><div><h1>QuantumBeat</h1><div class="sub">Contactless Quantum Heart Monitor · Concept Demo</div></div></div>
+  <div class="pill">ATRC QUANTUM CHALLENGE 2026–2027</div>
+</header>
+<main>
+  <section class="intro">
+    <div><h2>Heart signal screening</h2><p>This interactive demonstration uses synthetic heartbeat data to show how a quantum magnetometer signal might be processed. It does not connect to a real sensor or measure a person's heart.</p></div>
+    <button id="scanBtn" onclick="runScan()">Run sample scan</button>
+  </section>
+  <section class="grid">
+    <div class="card">
+      <h3>Heartbeat signal</h3>
+      <div class="chart-wrap"><canvas id="chart" aria-label="Synthetic heartbeat signal graph"></canvas></div>
+      <div class="metrics">
+        <div class="metric"><span>AVERAGE HEART RATE</span><strong id="bpm">-- <small style="font-size:12px">BPM</small></strong></div>
+        <div class="metric"><span>BEAT GAPS</span><strong id="gaps">--</strong></div>
+        <div class="metric"><span>FLAGGED GAPS</span><strong id="flagged">--</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Screening result</h3>
+      <div class="status"><span class="dot" id="dot"></span><span id="statusText">Waiting for sample scan</span></div>
+      <div class="alert" id="alertBox">Run a sample scan to process synthetic heartbeat data and view the statistical result.</div>
+      <div style="margin-top:22px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>Signal processing</span><span id="progressText">0%</span></div>
+        <div class="bar"><div id="progress"></div></div>
+      </div>
+      <p class="small">A flagged beat gap is an unusual value in this demonstration. It is not a diagnosis or a medical alert.</p>
+    </div>
+  </section>
+  <section class="card" style="margin-top:16px">
+    <h3>How QuantumBeat works</h3>
+    <div class="steps">
+      <div class="step"><b>01 · INPUT</b><span>The heart produces a tiny magnetic field with each beat.</span></div>
+      <div class="step"><b>02 · QUANTUM SENSOR</b><span>Laser-prepared atom spins respond to the magnetic field.</span></div>
+      <div class="step"><b>03 · PROCESS</b><span>Software filters noise and detects individual beats.</span></div>
+      <div class="step"><b>04 · STATISTICS</b><span>Beat gaps are compared with a healthy reference baseline.</span></div>
+      <div class="step"><b>05 · OUTPUT</b><span>Unusual gaps are flagged for a doctor to review.</span></div>
+    </div>
+  </section>
+  <section class="two">
+    <div class="card">
+      <h3>Project features</h3>
+      <ul>
+        <li>Contactless magnetic sensing concept.</li>
+        <li>Noise filtering before beat detection.</li>
+        <li>Z-score screening to flag unusual beat intervals.</li>
+        <li>Designed to support clinical review, not replace doctors.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Development status</h3>
+      <div class="status"><span class="dot" style="background:var(--cyan)"></span><span>Technology Readiness Level 2</span></div>
+      <p class="info">The sensor science has been demonstrated in research settings. The complete QuantumBeat screening tool remains a concept and has not been tested as a medical device.</p>
+      <p class="small">Next steps: test the statistics on public ECG data, work with a sensor laboratory, then validate results under medical supervision.</p>
+    </div>
+  </section>
+  <p class="small" style="text-align:center;margin-top:22px">QuantumBeat student concept · Synthetic data only · Not for diagnosis or treatment</p>
+</main>
+<script>
+const canvas=document.getElementById('chart'), ctx=canvas.getContext('2d');
+let lastPoints=[];
+function resizeCanvas(){
+  const r=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  canvas.width=Math.max(1,Math.floor(r.width*dpr)); canvas.height=Math.max(1,Math.floor(r.height*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0); drawChart(lastPoints);
+}
+function drawChart(points){
+  const w=canvas.clientWidth,h=canvas.clientHeight; ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle='#29435d';ctx.lineWidth=1;
+  for(let i=1;i<5;i++){let y=h*i/5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  if(!points.length){ctx.fillStyle='#8fa8c2';ctx.font='13px Arial';ctx.fillText('Your sample waveform will appear here',12,h/2);return;}
+  ctx.strokeStyle='#43d9e6';ctx.lineWidth=2;ctx.beginPath();
+  points.forEach((v,i)=>{const x=i/(points.length-1)*w,y=h*.52-v*h*.40;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+}
+function makeSignal(){
+  const n=900, duration=30, beatTimes=[]; let t=0;
+  while(t<duration){let gap=0.82+(Math.random()-.5)*.08;if(Math.random()<.09)gap+=Math.random()<.5?-.25:.38; t+=gap; if(t<duration)beatTimes.push(t);}
+  const values=[];
+  for(let i=0;i<n;i++){
+    const time=i/(n-1)*duration;let v=(Math.random()-.5)*.10+Math.sin(time*1.7)*.025;
+    for(const bt of beatTimes){const dt=time-bt;v+=.75*Math.exp(-Math.pow(dt/.035,2));v-=.16*Math.exp(-Math.pow((dt-.08)/.045,2));}
+    values.push(v);
+  }
+  return {values,beatTimes};
+}
+function runScan(){
+  const btn=document.getElementById('scanBtn');btn.disabled=true;btn.textContent='Processing...';
+  const {values,beatTimes}=makeSignal();lastPoints=values;drawChart(values);
+  const intervals=beatTimes.slice(1).map((t,i)=>t-beatTimes[i]);
+  const mean=intervals.reduce((a,b)=>a+b,0)/intervals.length;
+  const variance=intervals.reduce((a,b)=>a+(b-mean)**2,0)/intervals.length;
+  const sd=Math.sqrt(variance)||.001;
+  const flags=intervals.filter(x=>Math.abs((x-mean)/sd)>1.5).length;
+  const bpm=Math.round(60/mean);
+  document.getElementById('bpm').innerHTML=bpm+' <small style="font-size:12px">BPM</small>';
+  document.getElementById('gaps').textContent=intervals.length;
+  document.getElementById('flagged').textContent=flags;
+  const alert=document.getElementById('alertBox'),dot=document.getElementById('dot');
+  if(flags>0){document.getElementById('statusText').textContent='Unusual intervals detected in sample';alert.className='alert warning';alert.textContent=flags+' beat gap(s) crossed the demonstration z-score threshold. A real system would send the recording for clinical review.';dot.className='dot red';}
+  else{document.getElementById('statusText').textContent='No unusual intervals detected in sample';alert.className='alert';alert.textContent='No beat gaps crossed the demonstration z-score threshold in this sample. This result does not confirm a healthy heart.';dot.className='dot green';}
+  let p=0;const bar=document.getElementById('progress'),txt=document.getElementById('progressText');
+  const timer=setInterval(()=>{p=Math.min(100,p+10);bar.style.width=p+'%';txt.textContent=p+'%';if(p===100){clearInterval(timer);btn.disabled=false;btn.textContent='Run sample scan';}},45);
+}
+window.addEventListener('resize',resizeCanvas);resizeCanvas();
+</script>
+</body>
+</html>
