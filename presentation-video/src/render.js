@@ -45,7 +45,7 @@ async function renderChunk(idx, f0, f1, fps, segPath) {
     await page.evaluate(t => window.renderAt(t), f / fps);
     const buf = await page.screenshot({ type: 'jpeg', quality: 94 });
     if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
-    if ((f - f0) % 300 === 0) console.log(`[w${idx}] frame ${f - f0}/${f1 - f0}`);
+    if ((f - f0) % 60 === 0) console.log(`[w${idx}] frame ${f - f0}/${f1 - f0}`);
   }
   ff.stdin.end();
   await done;
