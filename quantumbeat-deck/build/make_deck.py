@@ -1,6 +1,6 @@
 """Add a 'Try Our QuantumBeat App' slide after slide 11 of the team's deck.
 
-usage: python3 make_deck.py <duplicated.pptx> <out.pptx> <app-demo.mp4> <poster.jpg>
+usage: python3 make_deck.py <duplicated.pptx> <out.pptx> <app-demo.mp4> <poster.jpg> [app_url]
 
 <duplicated.pptx> is the original deck after skills' add_slide.py has copied slide 11
 into position 12, so the new slide keeps the template's header, pill, boxes and footer.
@@ -42,7 +42,7 @@ def set_text(shape, text, link=None):
 T = {
     'title-11': 'Try Our QuantumBeat App',
     'question-11': 'How does our app show QuantumBeat in action?',
-    'demo-subtitle': 'Interactive web app · works offline in any web browser',
+    'demo-subtitle': 'Interactive web app · opens in any web browser',
     'demo-1-label': 'WHAT IT IS',
     'demo-1-prompt': 'A web app our team built to demo the idea',
     'demo-2-label': 'HOW TO OPEN IT',
@@ -52,12 +52,14 @@ T = {
     'demo-4-prompt': '72 BPM · 34 beat gaps · 3 gaps flagged',
     'demo-5-label': 'LIMITATIONS',
     'demo-5-prompt': 'Synthetic data only. Not a diagnosis.',
-    'demo-note': 'Click the video to watch the app run a sample scan. To use the app live, keep '
-                 'QuantumBeat_App.html in the same folder as this presentation.',
+    'demo-note': 'In Slide Show (press Play), tap the video to watch a sample scan, or tap “Open the live app” '
+                 'to try QuantumBeat in your web browser.',
 }
 for name, text in T.items():
     set_text(by_name(new, name), text)
-set_text(by_name(new, 'demo-2-prompt'), 'Click here: QuantumBeat_App.html', link='QuantumBeat_App.html')
+# web address of the published app (works on iPad, phones and PCs); fall back to the local file
+APP_URL = sys.argv[5] if len(sys.argv) > 5 else 'QuantumBeat_App.html'
+set_text(by_name(new, 'demo-2-prompt'), 'Open the live app (web link)', link=APP_URL)
 
 # rename the copied shapes so the new slide's objects are not called "...-11"
 for sh in new.shapes:
