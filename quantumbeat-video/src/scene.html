@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QuantumBeat Demo</title>
+<style>
+:root{
+  --bg0:#07111f; --bg1:#0b1b2e; --bg2:#10263b; --panel:#101f33; --panel2:#142840; --line:#28415d;
+  --text:#edf5ff; --muted:#9bb0c9; --cyan:#43d9e6; --blue:#4777ff; --green:#54d69a; --red:#ff7185; --violet:#8b7cf6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg0);font-family:Inter,'Liberation Sans',sans-serif;-webkit-font-smoothing:antialiased;color:var(--text)}
+#root{position:absolute;inset:0;overflow:hidden;background:linear-gradient(145deg,#07111f 0%,#0b1b2e 60%,#10263b 100%)}
+#grid{position:absolute;inset:0;opacity:.35;
+  background-image:linear-gradient(rgba(67,217,230,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(67,217,230,.06) 1px,transparent 1px);
+  background-size:60px 60px}
+.scene{position:absolute;inset:0;visibility:hidden}
+.abs{position:absolute}
+.eyebrow{color:var(--cyan);font-weight:700;letter-spacing:.22em;font-size:22px}
+.h1{font-family:'Inter Display',Inter,sans-serif;font-weight:800;letter-spacing:-.02em;color:#fff}
+.muted{color:var(--muted)}
+.k{color:var(--cyan);font-weight:700}
+.kr{color:var(--red);font-weight:700}
+.card{background:rgba(16,31,51,.94);border:1px solid var(--line);border-radius:22px}
+.logo{border-radius:30px;background:linear-gradient(135deg,#43d9e6,#4777ff);display:grid;place-items:center;color:#07111f;font-family:'Inter Display',Inter;font-weight:800}
+
+/* ---------- title ---------- */
+#s0 .eyebrow{left:150px;top:448px}
+#t-title{left:142px;top:478px;font-size:156px;line-height:1}
+#t-sub{left:152px;top:668px;font-size:46px;font-weight:500}
+#t-school{left:152px;top:740px;font-size:27px;color:#7f95b0}
+#t-logo{left:150px;top:300px;width:116px;height:116px;font-size:68px}
+#trace{position:absolute;left:0;top:820px;width:1920px;height:200px}
+
+/* ---------- problem ---------- */
+.s-eb{left:150px;top:118px}
+.s-title{left:148px;top:152px;font-size:66px;white-space:nowrap}
+#p-stat{left:150px;top:330px;font-family:'Inter Display',Inter;font-weight:800;font-size:150px;color:var(--red);letter-spacing:-.03em;line-height:1}
+#p-statlbl{left:154px;top:500px;width:720px;font-size:31px;line-height:1.4;color:#d9e6f5}
+#p-src{left:154px;top:620px;font-size:20px;color:#7f95b0}
+.pcard{position:absolute;left:1000px;width:770px;height:150px;display:flex;align-items:center;gap:26px;padding:0 30px}
+.pcard .ic{flex:none;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:rgba(255,113,133,.14)}
+.pcard .ic svg{width:42px;height:42px}
+.pcard h3{font-size:32px;font-weight:700;margin-bottom:6px}
+.pcard p{font-size:23px;color:var(--muted);line-height:1.35}
+#p-band{left:150px;top:860px;width:1620px;height:96px;border-radius:20px;background:rgba(67,217,230,.08);border:1px solid rgba(67,217,230,.25);display:flex;align-items:center;padding:0 36px;font-size:32px;font-weight:500;gap:18px}
+
+/* ---------- science ---------- */
+#sci-svg{position:absolute;left:0;top:250px;width:1920px;height:560px}
+.step-row{position:absolute;left:150px;top:820px;width:1620px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.spill{border-radius:18px;padding:16px 20px;background:rgba(16,31,51,.9);border:1.5px solid var(--line);opacity:.45}
+.spill b{display:block;color:var(--cyan);font-size:18px;letter-spacing:.14em;margin-bottom:6px}
+.spill span{font-size:22px;line-height:1.3;color:#dce8f5}
+.spill.on{opacity:1;border-color:var(--cyan);background:rgba(67,217,230,.1);box-shadow:0 0 0 4px rgba(67,217,230,.12)}
+#sci-note{left:150px;top:990px;font-size:21px;color:#7f95b0}
+
+/* ---------- app demo ---------- */
+#header{position:absolute;left:180px;right:180px;top:30px;height:70px;display:flex;align-items:center;gap:22px}
+#chip{flex:none;background:var(--cyan);color:#07111f;font-weight:800;font-size:19px;letter-spacing:.14em;padding:10px 18px;border-radius:999px;display:flex;align-items:center;gap:10px}
+#chip i{width:10px;height:10px;border-radius:50%;background:#e11d48;display:inline-block}
+#stitle{color:#fff;font-family:'Inter Display',Inter,sans-serif;font-weight:700;font-size:44px;white-space:nowrap}
+#hnote{margin-left:auto;color:var(--muted);font-size:20px}
+#vp{position:absolute;left:0;top:118px;width:1920px;height:790px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
+#stage{position:absolute;left:0;top:0;width:1920px;height:790px;transform-origin:0 0}
+#browser{position:absolute;left:180px;top:10px;width:1560px;height:770px;border-radius:16px;overflow:hidden;background:#07111f;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+#bbar{height:46px;background:#1a2433;display:flex;align-items:center;gap:16px;padding:0 18px;border-bottom:1px solid #26354a}
+.dots{display:flex;gap:8px}.dots i{width:12px;height:12px;border-radius:50%;display:block}
+#url{flex:1;max-width:620px;height:28px;border-radius:8px;background:#0e1724;color:#9fb3cc;font-size:14px;display:flex;align-items:center;padding:0 12px;gap:8px}
+#btag{margin-left:auto;color:#7f95b0;font-size:13px}
+#app{position:absolute;left:0;top:46px;width:1418.2px;height:658.2px;border:0;transform:scale(1.1);transform-origin:0 0;background:#07111f}
+#spot{position:absolute;border:3px solid var(--cyan);border-radius:22px;box-shadow:0 0 0 6px rgba(67,217,230,.18),0 0 40px rgba(67,217,230,.35);opacity:0;pointer-events:none}
+#cap{position:absolute;left:150px;right:150px;top:926px;height:120px;display:flex;align-items:center;justify-content:center}
+#capin{background:rgba(5,12,24,.86);border:1px solid rgba(67,217,230,.18);border-radius:16px;padding:20px 34px;color:#fff;font-size:33px;line-height:1.35;font-weight:500;text-align:center}
+#cursor{position:absolute;left:0;top:0;width:34px;height:34px;pointer-events:none;z-index:50;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+#ripple{position:absolute;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:4px solid var(--cyan);pointer-events:none;z-index:49;opacity:0}
+
+/* ---------- simulation ---------- */
+#sim-card{left:150px;top:290px;width:1200px;height:620px;background:#fff;border-radius:22px;padding:10px;overflow:hidden}
+#sim-card img{width:1180px;height:590px;display:block}
+.sbox{position:absolute;border:4px solid var(--violet);border-radius:14px;opacity:0}
+.sdot{position:absolute;width:54px;height:54px;margin:-27px 0 0 -27px;border:4px solid #e11d48;border-radius:50%;opacity:0}
+.stile{position:absolute;left:1400px;width:370px;height:132px;padding:20px 26px}
+.stile strong{display:block;font-family:'Inter Display',Inter;font-size:56px;font-weight:800;line-height:1}
+.stile span{display:block;font-size:22px;color:var(--muted);margin-top:8px}
+#sim-tools{left:1400px;top:740px;width:370px;font-size:21px;line-height:1.5;color:var(--muted)}
+#sim-lbl{position:absolute;padding:6px 14px;border-radius:10px;background:var(--violet);color:#fff;font-size:20px;font-weight:700;opacity:0}
+
+/* ---------- features ---------- */
+.fcard{position:absolute;top:300px;width:516px;height:470px;padding:34px 34px}
+.fcard .ic{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;margin-bottom:24px}
+.fcard .ic svg{width:48px;height:48px}
+.fcard .n{position:absolute;right:30px;top:30px;color:#4d6683;font-weight:800;font-size:22px;letter-spacing:.12em}
+.fcard h3{font-family:'Inter Display',Inter;font-size:36px;font-weight:800;margin-bottom:18px}
+.fcard .lb{font-size:16px;font-weight:800;letter-spacing:.16em;color:var(--cyan);margin:16px 0 6px}
+.fcard p{font-size:23px;line-height:1.38;color:#d6e3f2}
+.fcard p.m{color:var(--muted)}
+#f-band{left:150px;top:810px;width:1620px;height:96px;border-radius:20px;background:rgba(139,124,246,.1);border:1px solid rgba(139,124,246,.35);display:flex;align-items:center;padding:0 36px;font-size:29px;font-weight:500}
+
+/* ---------- readiness ---------- */
+#trl{position:absolute;left:150px;top:330px;width:1620px;height:180px}
+.tseg{position:absolute;top:40px;width:166px;height:70px;border-radius:14px;background:rgba(255,255,255,.05);border:1.5px solid var(--line);display:grid;place-items:center;font-family:'Inter Display';font-weight:800;font-size:34px;color:#4d6683}
+.tseg.on{background:rgba(67,217,230,.16);border-color:var(--cyan);color:#fff}
+.tgrp{position:absolute;top:126px;font-size:19px;color:var(--muted);text-align:center}
+#pin{position:absolute;top:-24px;padding:6px 14px;border-radius:999px;background:var(--cyan);color:#07111f;font-weight:800;font-size:17px;letter-spacing:.1em;white-space:nowrap}
+#r-why{left:150px;top:548px;width:1620px;font-size:31px;line-height:1.4;color:#dce8f5}
+.ncard{position:absolute;top:690px;width:520px;height:190px;padding:26px 30px}
+.ncard b{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;font-size:22px;margin-bottom:14px}
+.ncard p{font-size:25px;line-height:1.35;color:#dce8f5}
+#r-next{left:150px;top:640px;font-size:20px;letter-spacing:.2em;font-weight:800;color:var(--cyan)}
+
+/* ---------- message / credits ---------- */
+#m-eb{left:0;right:0;top:330px;text-align:center}
+#m-text{left:210px;right:210px;top:380px;text-align:center;font-size:72px;line-height:1.15}
+#c-wrap{position:absolute;inset:0}
+#c-head{left:0;right:0;top:112px;display:flex;justify-content:center;align-items:center;gap:22px}
+#c-logo{width:92px;height:92px;font-size:52px;border-radius:24px;flex:none}
+#c-name{font-size:62px;line-height:1}
+#c-ev{font-size:22px;color:var(--muted);margin-top:8px}
+#c-team{left:150px;right:150px;top:300px;display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.member{height:176px;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.member .av{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:22px;color:#07111f;margin-bottom:12px}
+.member span{font-size:22px;font-weight:600;line-height:1.25}
+#c-teacher{left:0;right:0;top:520px;text-align:center;font-size:30px}
+#c-school{left:0;right:0;top:572px;text-align:center;font-size:26px;color:var(--muted)}
+#c-thanks{left:0;right:0;top:660px;text-align:center;font-size:84px}
+#c-disc{left:0;right:0;top:820px;text-align:center;font-size:21px;color:#7f95b0}
+#fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:60}
+</style>
+</head>
+<body>
+<div id="root">
+  <div id="grid"></div>
+
+  <!-- S0 TITLE -->
+  <div class="scene" id="s0">
+    <div class="abs logo" id="t-logo">Q</div>
+    <div class="abs eyebrow">ATRC QUANTUM CHALLENGE 2026–2027 · PROJECT DEMONSTRATION</div>
+    <div class="abs h1" id="t-title">QuantumBeat</div>
+    <div class="abs muted" id="t-sub">A contactless quantum heart monitor</div>
+    <div class="abs" id="t-school">Applied Technology School – Al Ain</div>
+    <svg id="t-heart" class="abs" style="left:1180px;top:110px;width:700px;height:700px" viewBox="0 0 700 700"></svg>
+    <svg id="trace" viewBox="0 0 1920 200"></svg>
+  </div>
+
+  <!-- S1 PROBLEM -->
+  <div class="scene" id="s1">
+    <div class="abs eyebrow s-eb">THE PROBLEM</div>
+    <div class="abs h1 s-title">Heart rhythm problems are easy to miss</div>
+    <div class="abs" id="p-stat">17.9 million</div>
+    <div class="abs" id="p-statlbl">people died from cardiovascular diseases in 2019, about <span class="kr">32%</span> of all deaths worldwide.</div>
+    <div class="abs" id="p-src">Source: World Health Organization, cardiovascular diseases fact sheet</div>
+    <div class="pcard card" id="pc0" style="top:320px"><div class="ic"><svg viewBox="0 0 48 48"><path d="M2 26h9l4-10 6 20 5-14 3 4h5" stroke="#ff7185" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 26h8" stroke="#ff7185" stroke-width="3.5" stroke-dasharray="2 4" stroke-linecap="round"/></svg></div><div><h3>Rhythm problems come and go</h3><p>A short check-up can miss them, so they are found late.</p></div></div>
+    <div class="pcard card" id="pc1" style="top:490px"><div class="ic"><svg viewBox="0 0 48 48"><circle cx="16" cy="30" r="10" stroke="#ff7185" stroke-width="3.5" fill="none"/><circle cx="16" cy="30" r="3.5" fill="#ff7185"/><path d="M24 23c6-6 8-14 18-16" stroke="#ff7185" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg></div><div><h3>ECG needs electrodes</h3><p>Every test needs sticky electrodes on the skin.</p></div></div>
+    <div class="pcard card" id="pc2" style="top:660px"><div class="ic"><svg viewBox="0 0 48 48"><g stroke="#ff7185" stroke-width="3.5" stroke-linecap="round"><path d="M24 4v40M6.7 14l34.6 20M6.7 34l34.6-20"/><path d="M19 7l5 5 5-5M19 41l5-5 5 5" fill="none"/></g></svg></div><div><h3>SQUID scanners are rare</h3><p>Very sensitive, but they need extreme cooling and shielded rooms.</p></div></div>
+    <div class="abs" id="p-band"><svg width="34" height="34" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" stroke="#43d9e6" stroke-width="4" fill="none"/><path d="M24 12v13l8 5" stroke="#43d9e6" stroke-width="4" fill="none" stroke-linecap="round"/></svg>Finding rhythm problems <span class="k">early</span> gives doctors more time to treat them.</div>
+  </div>
+
+  <!-- S2 SCIENCE -->
+  <div class="scene" id="s2">
+    <div class="abs eyebrow s-eb">THE QUANTUM SCIENCE</div>
+    <div class="abs h1 s-title">Quantum sensors read the heart's magnetic field</div>
+    <svg id="sci-svg" viewBox="0 250 1920 560"></svg>
+    <div class="step-row">
+      <div class="spill" id="sp0"><b>1 · PREPARE</b><span>Laser light lines up the atom spins.</span></div>
+      <div class="spill" id="sp1"><b>2 · EXPOSE</b><span>Each heartbeat's tiny field tilts the spins.</span></div>
+      <div class="spill" id="sp2"><b>3 · READ OUT</b><span>The light shows how much they tilted.</span></div>
+      <div class="spill" id="sp3"><b>4 · COMPARE</b><span>Software checks every gap between beats.</span></div>
+    </div>
+    <div class="abs" id="sci-note">Optically pumped magnetometers work at room temperature, with no extreme cooling. &nbsp;Research basis: Morales et al., 2017 · SandboxAQ, 2024 · Feng et al., 2025</div>
+  </div>
+
+  <!-- S3 APP DEMO -->
+  <div class="scene" id="s3">
+    <div id="header"><div id="chip"><i></i>LIVE DEMO</div><div id="stitle">The QuantumBeat app</div><div id="hnote">Concept demo · synthetic data only</div></div>
+    <div id="vp"><div id="stage">
+      <div id="browser">
+        <div id="bbar"><div class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+          <div id="url"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" fill="none" stroke="#9fb3cc" stroke-width="2"/></svg>QuantumBeat_App.html</div>
+          <div id="btag">Runs offline in any web browser</div></div>
+        <iframe id="app" title="QuantumBeat app"></iframe>
+      </div>
+      <div id="spot"></div>
+    </div></div>
+    <div id="cap"><div id="capin"></div></div>
+  </div>
+
+  <!-- S4 SIMULATION -->
+  <div class="scene" id="s4">
+    <div class="abs eyebrow s-eb">BEHIND THE APP</div>
+    <div class="abs h1 s-title">Our Python simulation</div>
+    <div class="abs" id="sim-card"><img src="assets/simulation.png" alt="Synthetic heartbeat signal before and after filtering, and beat gaps with flagged values"></div>
+    <div class="sbox" id="sb-top"></div>
+    <div class="sdot" id="sd0"></div><div class="sdot" id="sd1"></div><div class="sdot" id="sd2"></div>
+    <div id="sim-lbl"></div>
+    <div class="stile card" id="st0" style="top:290px"><strong>30</strong><span>beat gaps measured</span></div>
+    <div class="stile card" id="st1" style="top:440px"><strong style="color:var(--red)">3</strong><span>gaps flagged</span></div>
+    <div class="stile card" id="st2" style="top:590px"><strong style="color:#ffc861">1</strong><span>of the 3 is a false alarm</span></div>
+    <div class="abs" id="sim-tools">Python · NumPy · SciPy · Matplotlib<br>Synthetic data only: no real sensor or patient.</div>
+  </div>
+
+  <!-- S5 FEATURES -->
+  <div class="scene" id="s5">
+    <div class="abs eyebrow s-eb">WHAT MAKES IT SPECIAL</div>
+    <div class="abs h1 s-title">Three key features</div>
+    <div class="fcard card" id="fc0" style="left:150px"><span class="n">01</span><div class="ic" style="background:rgba(67,217,230,.14)"><svg viewBox="0 0 48 48"><path d="M24 40S6 29 6 17a9 9 0 0 1 18-3 9 9 0 0 1 18 3c0 12-18 23-18 23z" fill="none" stroke="#43d9e6" stroke-width="3.5" stroke-linejoin="round"/><path d="M2 8a30 30 0 0 1 10-5M46 8a30 30 0 0 0-10-5" stroke="#43d9e6" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div><h3>Contactless sensing</h3><div class="lb">HOW IT WORKS</div><p>Quantum sensors read the heart's magnetic field from outside the body.</p><div class="lb">WHY IT MATTERS</div><p class="m">No electrodes or skin contact, so it is more comfortable.</p></div>
+    <div class="fcard card" id="fc1" style="left:702px"><span class="n">02</span><div class="ic" style="background:rgba(139,124,246,.16)"><svg viewBox="0 0 48 48"><path d="M4 30l4-8 3 12 4-20 3 16 3-6 3 4" stroke="#8b7cf6" stroke-width="3" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".55"/><path d="M26 24h18" stroke="#8b7cf6" stroke-width="3.5" stroke-linecap="round"/><path d="M28 30l4-12 4 16 3-6h5" stroke="#8b7cf6" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg></div><h3>Smart noise filtering</h3><div class="lb">HOW IT WORKS</div><p>Filters remove drift and mains noise before the beats are found.</p><div class="lb">WHY IT MATTERS</div><p class="m">Heart signals are faint, so clean data means fewer false alarms.</p></div>
+    <div class="fcard card" id="fc2" style="left:1254px"><span class="n">03</span><div class="ic" style="background:rgba(255,113,133,.14)"><svg viewBox="0 0 48 48"><path d="M8 40V8M8 40h34" stroke="#ff7185" stroke-width="3.5" stroke-linecap="round"/><path d="M12 30l7-6 6 4 7-10 6 3" stroke="#ff7185" stroke-width="3.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/><circle cx="32" cy="18" r="4.5" fill="#ff7185"/></svg></div><h3>Statistical early alert</h3><div class="lb">HOW IT WORKS</div><p>Each beat gap is compared with a healthy baseline using z-scores.</p><div class="lb">WHY IT MATTERS</div><p class="m">Unusual beats are flagged for a doctor to check.</p></div>
+    <div class="abs" id="f-band">Unlike cooled SQUID scanners, optically pumped sensors work at <span class="k" style="color:#b7aaff">&nbsp;room temperature</span>.</div>
+  </div>
+
+  <!-- S6 READINESS -->
+  <div class="scene" id="s6">
+    <div class="abs eyebrow s-eb">HOW READY IS IT?</div>
+    <div class="abs h1 s-title">Technology Readiness Level 2</div>
+    <div id="trl"></div>
+    <div class="abs" id="r-why">The sensor science is proven in labs and clinics, but our full screening tool is <span class="k">still a concept and untested</span>.</div>
+    <div class="abs" id="r-next">NEXT STEPS</div>
+    <div class="ncard card" id="nc0" style="left:150px"><b>1</b><p>Test our statistics on public ECG data.</p></div>
+    <div class="ncard card" id="nc1" style="left:700px"><b>2</b><p>Record sensor data with a lab partner, using healthy volunteers.</p></div>
+    <div class="ncard card" id="nc2" style="left:1250px"><b>3</b><p>Validate the results under medical supervision.</p></div>
+  </div>
+
+  <!-- S7 MESSAGE + CREDITS -->
+  <div class="scene" id="s7">
+    <div id="m-wrap" class="abs" style="inset:0">
+      <div class="abs eyebrow" id="m-eb">OUR KEY MESSAGE</div>
+      <div class="abs h1" id="m-text">Quantum sensing could make heart screening <span style="color:var(--cyan)">contactless</span>, so problems are found <span style="color:var(--cyan)">earlier</span>.</div>
+    </div>
+    <div id="c-wrap">
+      <div class="abs" id="c-head"><div class="logo" id="c-logo">Q</div><div><div class="h1" id="c-name">QuantumBeat</div><div id="c-ev">ATRC Quantum Challenge 2026–2027 · Module 01</div></div></div>
+      <div class="abs" id="c-team"></div>
+      <div class="abs" id="c-teacher">Supervising teacher: <b>Ms. Sahar Eljamal</b></div>
+      <div class="abs" id="c-school">Applied Technology School – Al Ain, Al Aqabiya</div>
+      <div class="abs h1" id="c-thanks">Thank you!</div>
+      <div class="abs" id="c-disc">Student concept · Synthetic data only · Not for diagnosis or treatment</div>
+    </div>
+  </div>
+
+  <div id="ripple"></div>
+  <svg id="cursor" viewBox="0 0 34 34"><path d="M5 3 L5 27 L11.5 21 L16 31 L20.5 29 L16 19.5 L25 19.5 Z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg>
+  <div id="fade"></div>
+</div>
+
+<script>
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+const easeOut = u => 1 - Math.pow(1 - u, 3);
+const lerp = (a, b, u) => a + (b - a) * u;
+const between = (t, a, b) => t >= a && t < b;
+const fadeWin = (t, a, b, f = .3) => Math.min(prog(t, a, a + f), 1 - prog(t, b - f, b));
+function setHTML(el, h) { if (el.__h !== h) { el.innerHTML = h; el.__h = h; } }
+function rise(el, p, d = 30) { el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * d}px)`; }
+const g = (x, s) => Math.exp(-(x / s) * (x / s));
+const PERIOD = 0.83;
+// one heartbeat waveform, u in [0, PERIOD)
+function beatWave(u) {
+  return .12 * g(u - .10, .03) - .14 * g(u - .19, .012) + 1.0 * g(u - .22, .013) - .28 * g(u - .25, .016) + .26 * g(u - .44, .045);
+}
+
+/* ================= timeline ================= */
+const DUR = 144;
+const SC = [ // [start, end]
+  [0, 8], [8, 23], [23, 43], [43, 95], [95, 108], [108, 120], [120, 131], [131, 144],
+];
+const XF = .6; // crossfade
+function sceneVis(t, i) {
+  const [a, b] = SC[i];
+  const fin = i === 0 ? 1 : prog(t, a - XF / 2, a + XF / 2);
+  const fout = i === SC.length - 1 ? 1 : 1 - prog(t, b - XF / 2, b + XF / 2);
+  return Math.min(fin, fout);
+}
+
+/* ================= S0 title ================= */
+function drawTitle(t, v) {
+  const L = t;
+  $('#t-logo').style.cssText = `opacity:${easeOut(prog(L, .2, .9))};transform:scale(${.7 + .3 * easeOut(prog(L, .2, .9))})`;
+  rise($('#s0 .eyebrow'), easeOut(prog(L, .5, 1.1)), 20);
+  rise($('#t-title'), easeOut(prog(L, .7, 1.5)), 40);
+  rise($('#t-sub'), easeOut(prog(L, 1.1, 1.8)), 24);
+  rise($('#t-school'), easeOut(prog(L, 1.4, 2.1)), 20);
+  // heart + magnetic field rings
+  const ph = (L % PERIOD) / PERIOD;
+  const beat = g(L % PERIOD - .22, .06);
+  let h = '';
+  const cx = 350, cy = 350;
+  for (let k = 0; k < 4; k++) {
+    const age = ((L - .22) / PERIOD - k * .5);
+    const fr = age - Math.floor(age);
+    const r = 110 + fr * 260;
+    const op = (1 - fr) * .55 * easeOut(prog(L, .8, 1.6));
+    h += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#43d9e6" stroke-width="${3 - fr * 2}" opacity="${op}"/>`;
+  }
+  const sc = 1 + beat * .08;
+  const hp = easeOut(prog(L, .6, 1.4));
+  h += `<g transform="translate(${cx} ${cy}) scale(${sc * (0.6 + .4 * hp)}) translate(-100 -92)" opacity="${hp}">
+     <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8fa0"/><stop offset="1" stop-color="#e11d48"/></linearGradient></defs>
+     <path d="M100 180S8 122 8 58A46 46 0 0 1 100 40a46 46 0 0 1 92 18c0 64-92 122-92 122z" fill="url(#hg)"/>
+     <path d="M30 92h36l12-26 18 52 14-36 8 10h52" stroke="#fff" stroke-width="7" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/></g>`;
+  h += `<text x="${cx}" y="${cy + 250}" text-anchor="middle" font-family="Inter" font-size="22" fill="#9bb0c9" opacity="${easeOut(prog(L, 1.6, 2.4))}">Every heartbeat makes a tiny magnetic field</text>`;
+  setHTML($('#t-heart'), h);
+  // scrolling monitor trace
+  const W = 1920, N = 480, pxPerSec = 360, base = 120, amp = 80;
+  const head = Math.min(W, (L - .3) * 900);
+  let d = '';
+  for (let i = 0; i <= N; i++) {
+    const x = i / N * W; if (x > head) break;
+    const tau = (x / pxPerSec) + L * 0.0;
+    const u = ((tau % PERIOD) + PERIOD) % PERIOD;
+    const y = base - amp * beatWave(u);
+    d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+  }
+  const shift = (L * pxPerSec) % (PERIOD * pxPerSec);
+  setHTML($('#trace'), `<defs><linearGradient id="tg" x1="0" x2="1"><stop offset="0" stop-color="#43d9e6" stop-opacity="0"/><stop offset=".25" stop-color="#43d9e6" stop-opacity=".9"/><stop offset="1" stop-color="#43d9e6"/></linearGradient></defs><g transform="translate(${-shift} 0)"><path d="${d}" stroke="url(#tg)" stroke-width="3" fill="none"/></g>`);
+}
+
+/* ================= S1 problem ================= */
+function drawProblem(t) {
+  const L = t - 8;
+  rise($('#s1 .eyebrow'), easeOut(prog(L, .2, .8)), 16);
+  rise($('#s1 .s-title'), easeOut(prog(L, .35, 1.1)), 26);
+  const c = easeOut(prog(L, 1.0, 2.8));
+  $('#p-stat').textContent = (17.9 * c).toFixed(1) + ' million';
+  rise($('#p-stat'), easeOut(prog(L, .9, 1.4)), 20);
+  rise($('#p-statlbl'), easeOut(prog(L, 2.2, 2.9)), 20);
+  rise($('#p-src'), easeOut(prog(L, 2.6, 3.3)), 10);
+  [0, 1, 2].forEach(i => { const p = easeOut(prog(L, 3.4 + i * 1.4, 4.2 + i * 1.4)); const el = $('#pc' + i); el.style.opacity = p; el.style.transform = `translateX(${(1 - p) * 80}px)`; });
+  rise($('#p-band'), easeOut(prog(L, 8.4, 9.2)), 20);
+}
+
+/* ================= S2 science ================= */
+const ATOMS = []; // 5 x 3 grid in the vapour cell
+for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) ATOMS.push({ x: 800 + c * 72 + (r % 2) * 18, y: 450 + r * 72, a0: ((c * 7 + r * 13) % 12) / 12 * 360 });
+function drawScience(t) {
+  const L = t - 23;
+  rise($('#s2 .eyebrow'), easeOut(prog(L, .2, .8)), 16);
+  rise($('#s2 .s-title'), easeOut(prog(L, .35, 1.1)), 26);
+  const dv = easeOut(prog(L, .9, 1.9));
+  const phase = L < 2.5 ? -1 : L < 6.5 ? 0 : L < 10.5 ? 1 : L < 14.5 ? 2 : 3;
+  [0, 1, 2, 3].forEach(i => { const el = $('#sp' + i); el.classList.toggle('on', phase === i); el.style.opacity = phase === i ? 1 : (phase > i ? .7 : .4) * dv; });
+  rise($('#sci-note'), easeOut(prog(L, 15.0, 15.8)), 10);
+
+  const laser = easeOut(prog(L, 2.6, 3.3));
+  const align = ease(prog(L, 3.3, 5.4));
+  const hb = L >= 6.5; // heart field reaches the cell
+  // pulse at the cell: beats arrive with travel delay
+  const travel = .45;
+  const tb = L - 6.5 - travel;
+  const pulse = hb && tb > 0 ? g(((tb % PERIOD) + PERIOD) % PERIOD - .22, .07) : 0;
+  let s = '';
+  // heart
+  const hcx = 330, hcy = 540;
+  const hbeat = g((L % PERIOD) - .22, .06);
+  s += `<defs><linearGradient id="hg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8fa0"/><stop offset="1" stop-color="#e11d48"/></linearGradient>
+    <linearGradient id="beam" x1="0" x2="1"><stop offset="0" stop-color="#b7aaff" stop-opacity=".2"/><stop offset=".5" stop-color="#b7aaff"/><stop offset="1" stop-color="#b7aaff" stop-opacity=".2"/></linearGradient>
+    <clipPath id="cellclip"><rect x="760" y="410" width="400" height="230" rx="34"/></clipPath></defs>`;
+  s += `<g opacity="${dv}" transform="translate(${hcx} ${hcy}) scale(${(1 + (hb ? hbeat * .1 : 0)) * .95}) translate(-100 -92)"><path d="M100 180S8 122 8 58A46 46 0 0 1 100 40a46 46 0 0 1 92 18c0 64-92 122-92 122z" fill="url(#hg2)"/></g>`;
+  s += `<text x="${hcx}" y="${hcy + 140}" text-anchor="middle" font-family="Inter" font-weight="600" font-size="24" fill="#dce8f5" opacity="${dv}">Heart</text>`;
+  // field arcs travelling to the cell
+  if (hb) {
+    for (let k = 0; k < 3; k++) {
+      const age = (L - 6.5) / PERIOD - k / 3; const fr = age - Math.floor(age);
+      if (age < 0) continue;
+      const r = 90 + fr * 420;
+      const op = (1 - fr) * .8;
+      s += `<path d="M${hcx + r * Math.cos(-.55)} ${hcy + r * Math.sin(-.55)} A${r} ${r} 0 0 1 ${hcx + r * Math.cos(.55)} ${hcy + r * Math.sin(.55)}" stroke="#43d9e6" stroke-width="3" fill="none" opacity="${op}"/>`;
+    }
+    s += `<text x="560" y="400" text-anchor="middle" font-family="Inter" font-size="21" fill="#43d9e6" opacity="${prog(L, 6.6, 7.2)}">tiny magnetic field</text>`;
+  }
+  // laser emitter + beam + detector
+  s += `<g opacity="${dv}"><rect x="900" y="300" width="120" height="44" rx="10" fill="#1d2c45" stroke="#8b7cf6" stroke-width="2"/><text x="960" y="329" text-anchor="middle" font-family="Inter" font-weight="700" font-size="19" fill="#b7aaff">LASER</text>
+    <rect x="865" y="700" width="190" height="44" rx="10" fill="#1d2c45" stroke="#8b7cf6" stroke-width="2"/><text x="960" y="728" text-anchor="middle" font-family="Inter" font-weight="700" font-size="17" fill="#b7aaff">LIGHT DETECTOR</text></g>`;
+  const beamI = laser * (phase >= 2 ? (.75 + .25 * (1 - pulse)) : 1);
+  s += `<rect x="940" y="344" width="40" height="${356 * laser}" fill="url(#beam)" opacity="${.85 * beamI}"/>`;
+  // vapour cell
+  s += `<g opacity="${dv}"><rect x="760" y="410" width="400" height="230" rx="34" fill="rgba(67,217,230,.07)" stroke="#43d9e6" stroke-width="2.5"/>
+    <text x="762" y="396" text-anchor="start" font-family="Inter" font-size="21" fill="#9bb0c9">atom vapour cell</text></g>`;
+  // atoms with spin arrows
+  s += `<g clip-path="url(#cellclip)" opacity="${dv}">`;
+  ATOMS.forEach((a, i) => {
+    const tilt = pulse * 32 * (i % 2 ? 1 : .85);
+    const ang = lerp(a.a0, 0, align) + tilt * align;
+    const rad = (ang - 90) * Math.PI / 180;
+    const len = 26;
+    const x2 = a.x + Math.cos(rad) * len, y2 = a.y + Math.sin(rad) * len;
+    s += `<circle cx="${a.x}" cy="${a.y}" r="12" fill="#1f3b5a" stroke="#43d9e6" stroke-width="2"/>`;
+    s += `<line x1="${a.x - Math.cos(rad) * 8}" y1="${a.y - Math.sin(rad) * 8}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+    const hx = x2, hy = y2, ha = rad;
+    s += `<path d="M${hx} ${hy} L${hx - Math.cos(ha - .5) * 9} ${hy - Math.sin(ha - .5) * 9} M${hx} ${hy} L${hx - Math.cos(ha + .5) * 9} ${hy - Math.sin(ha + .5) * 9}" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+  });
+  s += `</g>`;
+  if (phase === 0) s += `<text x="1190" y="530" font-family="Inter" font-size="22" fill="#b7aaff" opacity="${prog(L, 3.4, 4)}">spins line up</text>`;
+  if (phase === 1) s += `<text x="1190" y="530" font-family="Inter" font-size="22" fill="#43d9e6" opacity="${prog(L, 7, 7.6)}">spins tilt with each beat</text>`;
+  // readout panel
+  const ro = easeOut(prog(L, 10.4, 11.0));
+  if (ro > 0) {
+    const X0 = 1250, Y0 = 430, W = 520, H = 210;
+    s += `<g opacity="${ro}"><rect x="${X0}" y="${Y0}" width="${W}" height="${H}" rx="20" fill="#0d1d30" stroke="#28415d" stroke-width="2"/>
+      <text x="${X0 + 20}" y="${Y0 - 14}" font-family="Inter" font-size="21" fill="#9bb0c9">readout</text>
+      <path d="M1055 722 C1190 722 1215 ${Y0 + H - 20} ${X0} ${Y0 + H - 20}" stroke="#8b7cf6" stroke-width="2.5" fill="none" stroke-dasharray="6 6"/>`;
+    // trace: reveal over 10.6-14.4, frozen after
+    const reveal = prog(L, 10.6, 14.4);
+    const beatsT = [0.35, 1.17, 1.99, 3.19, 4.01]; // one long gap (1.20 s)
+    const secs = 4.6, pts = 260;
+    let d = '';
+    for (let i = 0; i <= pts * reveal; i++) {
+      const tt = i / pts * secs; let v = 0;
+      for (const b of beatsT) v += beatWave(tt - b + .22);
+      const x = X0 + 16 + i / pts * (W - 32), y = Y0 + H * .62 - v * 90;
+      d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    s += `<path d="${d}" stroke="#43d9e6" stroke-width="3" fill="none" stroke-linejoin="round"/>`;
+    // compare: gap brackets
+    if (L >= 14.5) {
+      const xb = b => X0 + 16 + (b / secs) * (W - 32);
+      const gaps = [[0, 1, '0.82 s'], [1, 2, '0.82 s'], [2, 3, '1.20 s'], [3, 4, '0.82 s']];
+      gaps.forEach(([a, b2, lbl], i) => {
+        const p = easeOut(prog(L, 14.6 + i * .45, 15.0 + i * .45));
+        const bad = i === 2;
+        const x1 = xb(beatsT[a]) + 4, x2 = xb(beatsT[b2]) - 4, y = Y0 + 34;
+        const col = bad ? '#ff7185' : '#54d69a';
+        s += `<g opacity="${p}"><path d="M${x1} ${y + 8} V${y} H${x2} V${y + 8}" stroke="${col}" stroke-width="2.5" fill="none"/><text x="${(x1 + x2) / 2}" y="${y - 8}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="17" fill="${col}">${lbl}</text></g>`;
+        if (bad) s += `<g opacity="${easeOut(prog(L, 16.4, 17))}"><rect x="${(x1 + x2) / 2 - 120}" y="${Y0 + H + 18}" width="240" height="40" rx="20" fill="rgba(255,113,133,.16)" stroke="#ff7185"/><text x="${(x1 + x2) / 2}" y="${Y0 + H + 44}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="18" fill="#ffd0d7">unusual gap → flag it</text></g>`;
+      });
+    }
+    s += `</g>`;
+  }
+  setHTML($('#sci-svg'), s);
+}
+
+/* ================= S3 app demo ================= */
+const T_CLICK = 50.6, SEED = 6;
+const APP = { scanned: false, frame: null, win: null, doc: null };
+const BX = 180, BY = 10, BAR = 46, AS = 1.1; // browser position in stage, app scale
+function appEl(sel) { return APP.doc.querySelector(sel); }
+function stageOf(el, fx = .5, fy = .5) {
+  const r = el.getBoundingClientRect();
+  return { x: BX + (r.left + r.width * fx) * AS, y: BY + BAR + (r.top + r.height * fy) * AS, w: r.width * AS, h: r.height * AS, l: BX + r.left * AS, t: BY + BAR + r.top * AS };
+}
+const FOC = {
+  whole: () => ({ x: BX + 780, y: BY + 385 }),
+  chart: () => stageOf(appEl('.grid > .card:nth-child(1)')),
+  metrics: () => stageOf(appEl('.metrics')),
+  result: () => stageOf(appEl('.grid > .card:nth-child(2)')),
+  steps: () => stageOf(appEl('.steps')),
+  status: () => stageOf(appEl('.two > .card:nth-child(2)')),
+};
+const CAM = [
+  [43, 1, 'whole'], [54.6, 1, 'whole'], [55.6, 1.4, 'chart'], [62.8, 1.4, 'chart'], [63.6, 1.6, 'metrics'], [69.8, 1.6, 'metrics'],
+  [70.6, 1.45, 'result'], [84.2, 1.45, 'result'], [85.0, 1, 'whole'], [86.8, 1, 'steps'], [87.5, 1.12, 'steps'], [89.9, 1.12, 'steps'],
+  [90.6, 1, 'whole'], [91.7, 1, 'status'], [92.4, 1.5, 'status'], [95, 1.5, 'status'],
+];
+const SPOTS = [[55.9, 62.8, 'chart'], [63.9, 69.8, 'metrics'], [70.9, 84.2, 'result'], [87.6, 89.9, 'steps'], [92.5, 95.0, 'status']];
+const CAPS = [
+  [43.6, 49.6, 'This is our <span class="k">QuantumBeat</span> app. It runs a sample scan on <span class="k">synthetic</span> heartbeat data.'],
+  [49.8, 56.0, 'Click <span class="k">Run sample scan</span>: the app builds a 30-second heartbeat signal and analyses it.'],
+  [56.2, 63.0, 'In the graph, each sharp spike is <span class="k">one heartbeat</span>.'],
+  [63.2, 70.0, 'It works out the <span class="k">average heart rate</span> and every <span class="k">beat gap</span>, the time between two beats.'],
+  [70.2, 78.6, 'A gap more than <span class="k">1.5 standard deviations</span> from the average (its <span class="k">z-score</span>) is flagged.'],
+  [78.8, 84.6, 'A flag means “a doctor should review this”. It is <span class="k">not a diagnosis</span>.'],
+  [84.8, 90.0, 'The app also explains our <span class="k">5 steps</span>: input, quantum sensor, process, statistics, output.'],
+  [90.2, 94.8, 'Status: <span class="k">TRL 2</span>. The sensor science is proven; our full tool is still a concept.'],
+];
+const MOVES = [ // [startMove, arrive, target(fn returning stage point)]
+  [45.4, 45.4, () => ({ x: BX + 1300, y: BY + 560 })],
+  [49.6, 50.4, () => stageOf(appEl('#scanBtn'), .5, .6)],
+  [52.3, 53.1, () => ({ x: BX + 1300, y: BY + 600 })],
+];
+function camAt(t) {
+  if (t <= CAM[0][0]) return { s: 1, f: FOC[CAM[0][2]]() };
+  for (let i = 0; i < CAM.length - 1; i++) {
+    const [ta, sa, fa] = CAM[i], [tb, sb, fb] = CAM[i + 1];
+    if (t >= ta && t < tb) { const u = ease(prog(t, ta, tb)); const A = FOC[fa](), B = FOC[fb](); return { s: lerp(sa, sb, u), f: { x: lerp(A.x, B.x, u), y: lerp(A.y, B.y, u) } }; }
+  }
+  const Lk = CAM[CAM.length - 1]; return { s: Lk[1], f: FOC[Lk[2]]() };
+}
+function scrollAt(t) {
+  const docH = APP.doc.documentElement.scrollHeight, vh = APP.win.innerHeight, maxS = Math.max(0, docH - vh);
+  const ySteps = Math.min(maxS, appEl('.steps').closest('.card').offsetTop - 40);
+  const yStat = Math.min(maxS, appEl('.two').offsetTop - 60);
+  const y0 = Math.min(maxS, 70);
+  if (t < 53.4) return 0;
+  if (t < 54.6) return lerp(0, y0, ease(prog(t, 53.4, 54.6)));
+  if (t < 85.0) return y0;
+  if (t < 86.8) return lerp(y0, ySteps, ease(prog(t, 85.0, 86.8)));
+  if (t < 90.6) return ySteps;
+  return lerp(ySteps, yStat, ease(prog(t, 90.6, 91.7)));
+}
+function drawApp(t, vis) {
+  if (!APP.win) return;
+  // drive the app: seeded scan at the click, virtual clock afterwards
+  if (t >= T_CLICK && !APP.scanned) { APP.win.__seed(SEED); appEl('#scanBtn').click(); APP.scanned = true; }
+  if (APP.scanned) APP.win.__advanceTo((t - T_CLICK) * 1000);
+  APP.win.scrollTo(0, scrollAt(t));
+  const L = t - 43;
+  const we = easeOut(prog(L, 0, 1.0));
+  $('#browser').style.transform = `translateY(${(1 - we) * 30}px) scale(${.96 + .04 * we})`;
+  $('#header').style.opacity = easeOut(prog(L, .1, .7));
+  // camera
+  const cam = camAt(t);
+  const tx = (1 - cam.s) * cam.f.x, ty = (1 - cam.s) * cam.f.y;
+  $('#stage').style.transform = `translate(${tx}px,${ty}px) scale(${cam.s})`;
+  const toPage = p => ({ x: cam.s * p.x + tx, y: 118 + cam.s * p.y + ty });
+  // spotlight
+  const sp = SPOTS.find(s => t >= s[0] - .1 && t < s[1] + .1);
+  const spot = $('#spot');
+  if (sp) {
+    const r = FOC[sp[2]](); const pad = 10;
+    spot.style.left = (r.l - pad) + 'px'; spot.style.top = (r.t - pad) + 'px'; spot.style.width = (r.w + pad * 2) + 'px'; spot.style.height = (r.h + pad * 2) + 'px';
+    spot.style.opacity = fadeWin(t, sp[0], sp[1], .35);
+    spot.style.borderWidth = (3 / cam.s) + 'px';
+  } else spot.style.opacity = 0;
+  // captions
+  const cap = CAPS.find(c => t >= c[0] && t < c[1]);
+  const capin = $('#capin');
+  if (cap) { setHTML(capin, cap[2]); const v = fadeWin(t, cap[0], cap[1], .3); capin.style.opacity = v; capin.style.transform = `translateY(${(1 - v) * 12}px)`; }
+  else capin.style.opacity = 0;
+  // cursor
+  let i = -1; for (let k = 0; k < MOVES.length; k++) if (t >= MOVES[k][0]) i = k;
+  const cur = $('#cursor'), rip = $('#ripple');
+  const cvis = vis * (i >= 0 ? 1 : 0) * prog(t, 45.4, 45.8) * (1 - prog(t, 54.6, 55.0));
+  if (i >= 0) {
+    const [ts, ta, tg] = MOVES[i];
+    let p = tg();
+    if (t < ta && i > 0) { const a = MOVES[i - 1][2](), u = ease(prog(t, ts, ta)); p = { x: lerp(a.x, p.x, u), y: lerp(a.y, p.y, u) + Math.sin(u * Math.PI) * -24 }; }
+    const pp = toPage(p);
+    cur.style.transform = `translate(${pp.x - 5}px,${pp.y - 3}px)`;
+    const d = t - T_CLICK;
+    if (d >= 0 && d < .5) { rip.style.left = pp.x + 'px'; rip.style.top = pp.y + 'px'; rip.style.opacity = (1 - d / .5) * .9 * cvis; rip.style.transform = `scale(${.25 + d / .5 * .9})`; }
+    else rip.style.opacity = 0;
+  }
+  cur.style.opacity = cvis;
+  if (cvis === 0) rip.style.opacity = 0;
+}
+
+/* ================= S4 simulation ================= */
+const IMG = { x: 160, y: 300, s: 1180 / 1480 }; // image placement on screen
+const ip = (x, y) => ({ x: IMG.x + x * IMG.s, y: IMG.y + y * IMG.s });
+function drawSim(t) {
+  const L = t - 95;
+  rise($('#s4 .eyebrow'), easeOut(prog(L, .2, .8)), 16);
+  rise($('#s4 .s-title'), easeOut(prog(L, .35, 1.1)), 26);
+  rise($('#sim-card'), easeOut(prog(L, .6, 1.4)), 30);
+  // highlight 1: filtering (top plot)
+  const a = ip(100, 48), b = ip(1475, 355);
+  const sb = $('#sb-top');
+  sb.style.left = a.x + 'px'; sb.style.top = a.y + 'px'; sb.style.width = (b.x - a.x) + 'px'; sb.style.height = (b.y - a.y) + 'px';
+  sb.style.opacity = fadeWin(L, 2.0, 6.6, .4);
+  const lbl = $('#sim-lbl');
+  // highlight 2: flagged dots
+  const dots = [[1106, 600], [1149, 445], [1361, 537]];
+  dots.forEach(([x, y], i) => { const p = ip(x, y); const el = $('#sd' + i); el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; const v = Math.min(easeOut(prog(L, 7.0 + i * .35, 7.5 + i * .35)), 1 - prog(L, 12.2, 12.7)); el.style.opacity = v; el.style.transform = `scale(${1.6 - .6 * v})`; });
+  if (L < 6.8) { setHTML(lbl, 'Raw noisy signal → filtered'); const p = ip(560, 352); lbl.style.left = p.x + 'px'; lbl.style.top = (p.y + 8) + 'px'; lbl.style.background = 'var(--violet)'; lbl.style.opacity = fadeWin(L, 2.3, 6.6, .4); }
+  else { setHTML(lbl, 'Flagged beat gaps'); const p = ip(1040, 650); lbl.style.left = (p.x - 60) + 'px'; lbl.style.top = (p.y + 10) + 'px'; lbl.style.background = '#e11d48'; lbl.style.opacity = Math.min(prog(L, 7.6, 8.0), 1 - prog(L, 12.2, 12.7)); }
+  [0, 1, 2].forEach(i => { const p = easeOut(prog(L, 1.6 + i * .5, 2.2 + i * .5)); const el = $('#st' + i); el.style.opacity = p; el.style.transform = `translateX(${(1 - p) * 40}px)`; });
+  rise($('#sim-tools'), easeOut(prog(L, 3.4, 4.0)), 12);
+}
+
+/* ================= S5 features ================= */
+function drawFeatures(t) {
+  const L = t - 108;
+  rise($('#s5 .eyebrow'), easeOut(prog(L, .2, .8)), 16);
+  rise($('#s5 .s-title'), easeOut(prog(L, .35, 1.1)), 26);
+  [0, 1, 2].forEach(i => rise($('#fc' + i), easeOut(prog(L, .9 + i * .45, 1.7 + i * .45)), 50));
+  rise($('#f-band'), easeOut(prog(L, 6.5, 7.3)), 20);
+}
+
+/* ================= S6 readiness ================= */
+function drawReady(t) {
+  const L = t - 120;
+  rise($('#s6 .eyebrow'), easeOut(prog(L, .2, .8)), 16);
+  rise($('#s6 .s-title'), easeOut(prog(L, .35, 1.1)), 26);
+  const W = 166, gap = (1620 - 9 * W) / 8;
+  let h = '';
+  for (let i = 0; i < 9; i++) {
+    const p = easeOut(prog(L, .8 + i * .08, 1.2 + i * .08));
+    const on = i < 2 && L > 1.8 + i * .4;
+    h += `<div class="tseg ${on ? 'on' : ''}" style="left:${i * (W + gap)}px;opacity:${p}">${i + 1}</div>`;
+  }
+  const gl = [['Idea and early research', 0], ['Lab testing and prototypes', 3], ['Real-world validation', 6]];
+  gl.forEach(([s, i]) => h += `<div class="tgrp" style="left:${i * (W + gap)}px;width:${3 * W + 2 * gap}px;opacity:${easeOut(prog(L, 1.4, 2))}">${s}</div>`);
+  const pinP = easeOut(prog(L, 2.4, 3.0));
+  h += `<div id="pin" style="left:${(W + gap) + W / 2 - 74}px;opacity:${pinP};transform:translateY(${(1 - pinP) * -14}px)">WE ARE HERE</div>`;
+  setHTML($('#trl'), h);
+  rise($('#r-why'), easeOut(prog(L, 3.0, 3.7)), 16);
+  rise($('#r-next'), easeOut(prog(L, 4.6, 5.2)), 10);
+  [0, 1, 2].forEach(i => rise($('#nc' + i), easeOut(prog(L, 5.0 + i * .6, 5.7 + i * .6)), 30));
+}
+
+/* ================= S7 message + credits ================= */
+const TEAM = ['Saif Ahmed AlRowahi', 'Ahmed Jasem Alnuemi', 'Mubarak Tareq Bin Hariz', 'Shaab Abdulla Alyafei', 'Mohammed Helal Alkabbi'];
+const AVC = ['#43d9e6', '#8b7cf6', '#54d69a', '#ffc861', '#ff7185'];
+function drawCredits(t) {
+  const L = t - 131;
+  const m = Math.min(easeOut(prog(L, .3, 1.1)), 1 - prog(L, 5.2, 5.8));
+  $('#m-wrap').style.opacity = m;
+  rise($('#m-eb'), easeOut(prog(L, .3, .9)), 14);
+  rise($('#m-text'), easeOut(prog(L, .5, 1.3)), 30);
+  const c = prog(L, 5.8, 6.4);
+  $('#c-wrap').style.opacity = c;
+  $('#c-wrap').style.visibility = c > 0 ? 'visible' : 'hidden';
+  if (c > 0) {
+    setHTML($('#c-team'), TEAM.map((n, i) => `<div class="member card" id="mb${i}"><div class="av" style="background:${AVC[i]}">${n.split(' ').map(w => w[0]).slice(0, 2).join('')}</div><span>${n}</span></div>`).join(''));
+    TEAM.forEach((_, i) => rise($('#mb' + i), easeOut(prog(L, 6.4 + i * .18, 7.0 + i * .18)), 24));
+    rise($('#c-teacher'), easeOut(prog(L, 7.6, 8.2)), 12);
+    rise($('#c-school'), easeOut(prog(L, 7.8, 8.4)), 12);
+    rise($('#c-thanks'), easeOut(prog(L, 8.4, 9.2)), 24);
+    rise($('#c-disc'), easeOut(prog(L, 9.0, 9.6)), 10);
+  }
+}
+
+/* ================= render ================= */
+const DRAW = [drawTitle, drawProblem, drawScience, drawApp, drawSim, drawFeatures, drawReady, drawCredits];
+function renderAt(t) {
+  for (let i = 0; i < SC.length; i++) {
+    const v = sceneVis(t, i);
+    const el = $('#s' + i);
+    el.style.visibility = v > 0 ? 'visible' : 'hidden';
+    el.style.opacity = v;
+    if (v > 0 || (i === 3 && t >= SC[3][0])) DRAW[i](t, v);
+  }
+  if (sceneVis(t, 3) <= 0) { $('#cursor').style.opacity = 0; $('#ripple').style.opacity = 0; }
+  $('#grid').style.transform = `translateY(${-(t * 6) % 60}px)`;
+  $('#fade').style.opacity = Math.max(1 - prog(t, 0, .5), prog(t, DUR - .7, DUR));
+}
+
+/* ================= init: load the real app into a same-origin iframe ================= */
+const INJECT = `<script>(function(){
+  var s=1; window.__seed=function(v){s=v>>>0;};
+  Math.random=function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+  var timers=[],now=0,idc=1,SLOW=3;
+  window.setInterval=function(fn,ms){var id=idc++;timers.push({id:id,fn:fn,ms:ms*SLOW,next:now+ms*SLOW,rep:true});return id;};
+  window.setTimeout=function(fn,ms){var id=idc++;ms=(ms||0)*SLOW;timers.push({id:id,fn:fn,ms:ms,next:now+ms,rep:false});return id;};
+  window.clearInterval=window.clearTimeout=function(id){for(var i=0;i<timers.length;i++)if(timers[i].id===id){timers.splice(i,1);return;}};
+  window.__advanceTo=function(target){for(;;){var nx=null;for(var i=0;i<timers.length;i++){var x=timers[i];if(x.next<=target&&(!nx||x.next<nx.next))nx=x;}if(!nx)break;now=nx.next;if(nx.rep)nx.next+=nx.ms;else timers.splice(timers.indexOf(nx),1);nx.fn();}if(target>now)now=target;};
+})();<\/script><style>*{transition:none!important}html{scrollbar-width:none}::-webkit-scrollbar{display:none}</style>`;
+async function init(appHtml) {
+  const frame = $('#app');
+  const loaded = new Promise(r => frame.addEventListener('load', r, { once: true }));
+  frame.srcdoc = appHtml.replace('<head>', '<head>' + INJECT);
+  await loaded;
+  APP.frame = frame; APP.win = frame.contentWindow; APP.doc = frame.contentDocument;
+  await APP.doc.fonts.ready;
+  renderAt(0);
+  return { docH: APP.doc.documentElement.scrollHeight, vh: APP.win.innerHeight };
+}
+window.init = init; window.renderAt = renderAt; window.DUR = DUR;
+</script>
+</body>
+</html>
