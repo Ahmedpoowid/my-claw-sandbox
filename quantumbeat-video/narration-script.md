@@ -1,6 +1,10 @@
 # QuantumBeat project video: narration script
 
-`QuantumBeat-Demo.mp4` is 2:24 long. It has on-screen text and captions, but no voice.
+There are two versions of the video, both 2:24 long:
+
+- `QuantumBeat-Demo-voiceover.mp4` has an AI voiceover (Piper text-to-speech, "Joe" voice) reading lines almost identical to these. Use it as it is, or as a timing guide.
+- `QuantumBeat-Demo.mp4` has captions but no voice. Use it if your team records its own voices with the script below.
+
 Each block below starts at the time shown. The speaker split is only a suggestion, so swap it however your team likes.
 Read at a calm pace, about the speed you'd use to explain something to a friend.
 

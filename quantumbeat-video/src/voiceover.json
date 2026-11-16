@@ -1,0 +1,69 @@
+{
+ "end": 144,
+ "lines": [
+  [
+   0.4,
+   "Hi! We're the Quantum Beat team, from Applied Technology School in Al Ain. This is Quantum Beat: a contactless quantum heart monitor."
+  ],
+  [
+   8.4,
+   "Heart disease is the leading cause of death worldwide: 17.9 million deaths in 2019. Rhythm problems come and go, so a short check-up can miss them. E C G needs electrodes, and SQUID scanners need extreme cooling."
+  ],
+  [
+   23.5,
+   "Every heartbeat makes a tiny magnetic field. Our sensor reads it using quantum physics. First, laser light lines up the spins of atoms in a vapour cell. Each heartbeat tilts those spins, the light shows how much, and our software checks the gap between beats. All at room temperature."
+  ],
+  [
+   43.3,
+   "Here's our Quantum Beat app. It's a concept demo, using synthetic heartbeat data, not a real patient."
+  ],
+  [
+   49.9,
+   "When we click Run sample scan, the app builds a thirty-second heartbeat signal, and analyses it."
+  ],
+  [
+   56.4,
+   "In the graph, each sharp spike is one heartbeat. The small wiggles in between are noise."
+  ],
+  [
+   63.2,
+   "It calculates the average heart rate, seventy-two beats per minute, and measures thirty-four beat gaps."
+  ],
+  [
+   70.4,
+   "Then come the statistics. Any gap with a zee score above one point five is flagged. In this sample, three gaps were flagged."
+  ],
+  [
+   79.0,
+   "A flag means a doctor should take a look. It is not a diagnosis."
+  ],
+  [
+   83.8,
+   "Below, the app shows our five steps: input, quantum sensor, process, statistics, output."
+  ],
+  [
+   90.6,
+   "And it shows where we are today: Technology Readiness Level 2."
+  ],
+  [
+   95.5,
+   "Behind the app is our Python simulation. Filtering cleans the noisy signal, then thirty beat gaps are measured. Three were flagged, and one of them was a false alarm, so we still need to tune it."
+  ],
+  [
+   107.6,
+   "Quantum Beat has three key features: contactless sensing, with no electrodes; smart noise filtering, for fewer false alarms; and a statistical alert that flags unusual beats for a doctor."
+  ],
+  [
+   120.2,
+   "We're at Technology Readiness Level 2: the science is proven, but our tool is still a concept. Next, we'll test it on public E C G data, work with a lab, then validate it with doctors."
+  ],
+  [
+   131.8,
+   "Our message: quantum sensing could make heart screening contactless, so problems are found earlier."
+  ],
+  [
+   139.6,
+   "Thank you for watching!"
+  ]
+ ]
+}
